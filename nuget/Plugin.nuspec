@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package >
+  <metadata minClientVersion="2.8.1">
+    <id>Plugin.PushNotification</id>
+    <version>0.0.9-alpha</version>
+    <title>Push Notification Plugin for Xamarin</title>
+    <authors>Rendy Del Rosario</authors>
+    <owners>crossgeeks</owners>
+    <licenseUrl>https://raw.githubusercontent.com/CrossGeeks/PushNotificationPlugin/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/CrossGeeks/PushNotificationPlugin</projectUrl>
+    <iconUrl>https://github.com/CrossGeeks/PushNotificationPlugin/blob/master/art/icon.png?raw=true</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</description>
+    <summary>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</summary>
+    <releaseNotes>Support for handling  push notifications</releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>iOS,Android,push notifications,pcl,xamarin,plugins,xam.pcl,fcm,apn</tags>
+    <dependencies>
+       <group targetFramework="MonoAndroid10">
+            <dependency id="Xamarin.GooglePlayServices.Base" version="42.1021.1" />
+            <dependency id="Xamarin.Firebase.Messaging" version="42.1021.1" />
+        </group>
+    </dependencies>
+  </metadata>
+  <files>
+        <!--NetStandard/PCL-->
+        <file src="..\src\Plugin.PushNotification\bin\Release\netstandard1.0\Plugin.PushNotification.*" target="lib\netstandard1.0" />
+        <file src="..\src\Plugin.PushNotification.Android\bin\Release\Plugin.PushNotification.*" target="lib\MonoAndroid10" />
+        <file src="..\src\Plugin.PushNotification.iOS\bin\iPhone\Release\Plugin.PushNotification.*" target="lib\Xamarin.iOS10" />
+  </files>
+</package>
+
