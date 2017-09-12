@@ -25,8 +25,8 @@ On Firebase Cloud Messaging there are two types of messages that you can send to
         "other_key" : true,
         "body":"test"
      },
-     "priority": "high",
-     "condition": "'general' in topics"
+     "priority": "high"
+    
 }
 ```
 
@@ -40,11 +40,37 @@ https://firebase.google.com/docs/cloud-messaging/http-server-ref
 
 ## iOS APS Push Notifications
 
-If  "content_available" : true is not sent then you have to tap on the notification for it to be received on the application.
-
-For more information: 
-
 https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html#//apple_ref/doc/uid/TP40008194-CH10-SW1
+
+## Configuring a Silent Notification
+
+On iOS to get a silent notification you should send "content_available" : 1 inside the "aps" payload key.
+
+iOS Silent Payload Sample:
+```json
+{
+    "aps" : {
+        "content-available" : 1
+    }
+    "acme1" : "bar",
+    "acme2" : 42
+}
+```
+
+On Android to get a silent notification you should send "silent" : true inside the "data" payload key.
+
+Android Silent Payload Sample:
+```json
+{
+    "data": {
+        "message" : "my_custom_value",
+        "other_key" : true,
+        "body":"test",
+	"silent" : true
+     },
+     "priority": "high"
+}
+```
 
 ### Notification Events
 
