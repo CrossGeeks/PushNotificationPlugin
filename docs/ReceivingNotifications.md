@@ -51,7 +51,7 @@ iOS Silent Payload Sample:
 {
     "aps" : {
         "content-available" : 1
-    }
+    },
     "acme1" : "bar",
     "acme2" : 42
 }
