@@ -1,5 +1,5 @@
 ## Push Notification Plugin for Xamarin iOS and Android
-Simple cross platform plugin for handling push notifications.
+Simple cross platform plugin for handling push notifications. Uses FCM for Android and APS for iOS.
 
 ### Setup
 * Available on NuGet: http://www.nuget.org/packages/Plugin.PushNotification [![NuGet](https://img.shields.io/nuget/v/Plugin.PushNotification.svg?label=NuGet)](https://www.nuget.org/packages/Plugin.PushNotification/)
