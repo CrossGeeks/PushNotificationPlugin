@@ -175,7 +175,7 @@ iOS Notification Sample Payload:
 ```json
 {
    "aps" : {
-      "category" : "message"
+      "category" : "message",
       "alert" : {
          "body" : "hello!"
       },
