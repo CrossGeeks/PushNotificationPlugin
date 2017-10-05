@@ -29,7 +29,6 @@ Here you will find detailed documentation on setting up and using the Push Notif
 
 * [Getting Started](docs/GettingStarted.md)
 * [Receiving Push Notifications](docs/ReceivingNotifications.md)
-* [Testing Push Notifications](docs/TestingPushNotifications.md)
 * [Notification Category Actions](docs/NotificationActions.md)
 * [FAQ](docs/FAQ.md)
 
