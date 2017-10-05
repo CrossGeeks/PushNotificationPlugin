@@ -27,7 +27,6 @@ Call **CrossPushNotification.Current** from any project or PCL to gain access to
 
 Here you will find detailed documentation on setting up and using the Push Notification Plugin for Xamarin
 
-* [Setup](docs/Setup.md)
 * [Getting Started](docs/GettingStarted.md)
 * [Receiving Push Notifications](docs/ReceivingNotifications.md)
 * [Testing Push Notifications](docs/TestingPushNotifications.md)
