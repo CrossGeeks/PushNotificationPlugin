@@ -15,12 +15,14 @@ using Android.Support.V4.App;
 using System.Collections.ObjectModel;
 using Android.Content.PM;
 using Android.Content.Res;
+using Android.Graphics;
 
 namespace Plugin.PushNotification
 {
     public class DefaultPushNotificationHandler : IPushNotificationHandler
     {
         public const string DomainTag = "DefaultPushNotificationHandler";
+
         /// <summary>
         /// Title
         /// </summary>
@@ -86,6 +88,11 @@ namespace Plugin.PushNotification
         /// </summary>
         public const string ActionIdentifierKey = "action_identifier";
 
+        /// <summary>
+        /// Color
+        /// </summary>
+        public const string ColorKey = "color";
+
         public void OnOpened(NotificationResponse response)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
@@ -93,7 +100,6 @@ namespace Plugin.PushNotification
 
         public void OnReceived(IDictionary<string, string> parameters)
         {
-
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnReceived");
 
             if (parameters.ContainsKey(SilentKey) && (parameters[SilentKey] == "true" || parameters[SilentKey] == "1"))
@@ -101,7 +107,7 @@ namespace Plugin.PushNotification
                 return;
             }
 
-            Context context = Android.App.Application.Context;
+            Context context = Application.Context;
 
             int notifyId = 0;
             string title = context.ApplicationInfo.LoadLabel(context.PackageManager);
@@ -110,7 +116,7 @@ namespace Plugin.PushNotification
 
             if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTextKey) && parameters.ContainsKey(PushNotificationManager.NotificationContentTextKey))
             {
-                message = parameters[PushNotificationManager.NotificationContentTextKey].ToString();
+                message = parameters[PushNotificationManager.NotificationContentTextKey];
             }
             else if (parameters.ContainsKey(AlertKey))
             {
@@ -135,12 +141,10 @@ namespace Plugin.PushNotification
 
             if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTitleKey) && parameters.ContainsKey(PushNotificationManager.NotificationContentTitleKey))
             {
-                title = parameters[PushNotificationManager.NotificationContentTitleKey].ToString();
-
+                title = parameters[PushNotificationManager.NotificationContentTitleKey];
             }
             else if (parameters.ContainsKey(TitleKey))
             {
-
                 if (!string.IsNullOrEmpty(message))
                 {
                     title = $"{parameters[TitleKey]}";
@@ -151,30 +155,30 @@ namespace Plugin.PushNotification
                 }
             }
 
-
-
             if (parameters.ContainsKey(IdKey))
             {
-                var str = parameters[IdKey].ToString();
+                var str = parameters[IdKey];
                 try
                 {
                     notifyId = Convert.ToInt32(str);
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
                     // Keep the default value of zero for the notify_id, but log the conversion problem.
-                    System.Diagnostics.Debug.WriteLine("Failed to convert {0} to an integer", str);
+                    System.Diagnostics.Debug.WriteLine($"Failed to convert {str} to an integer {ex}");
                 }
             }
+
             if (parameters.ContainsKey(TagKey))
             {
-                tag = parameters[TagKey].ToString();
+                tag = parameters[TagKey];
             }
 
             if (PushNotificationManager.SoundUri == null)
             {
                 PushNotificationManager.SoundUri = RingtoneManager.GetDefaultUri(RingtoneType.Notification);
             }
+
             try
             {
 
@@ -189,17 +193,27 @@ namespace Plugin.PushNotification
                     if (name == null)
                     {
                         PushNotificationManager.IconResource = context.ApplicationInfo.Icon;
-
                     }
                 }
 
             }
-            catch (Android.Content.Res.Resources.NotFoundException ex)
+            catch (Resources.NotFoundException ex)
             {
                 PushNotificationManager.IconResource = context.ApplicationInfo.Icon;
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
 
+            if (parameters.TryGetValue(ColorKey, out string color) && color != null)
+            {
+                try
+                {
+                    PushNotificationManager.Color = Color.ParseColor(color);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"{DomainTag} - Failed to parse color {ex}");
+                }
+            }
 
             Intent resultIntent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
 
@@ -230,8 +244,10 @@ namespace Plugin.PushNotification
                 .SetAutoCancel(true)
                 .SetContentIntent(pendingIntent);
 
+            if (PushNotificationManager.Color != null)
+                notificationBuilder.SetColor(PushNotificationManager.Color.Value);
 
-            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.JellyBean)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBean)
             {
                 // Using BigText notification style to support long message
                 var style = new NotificationCompat.BigTextStyle();
@@ -244,13 +260,13 @@ namespace Plugin.PushNotification
             if (parameters.ContainsKey(CategoryKey))
             {
                 category = parameters[CategoryKey];
-
             }
 
             if (parameters.ContainsKey(ActionKey))
             {
                 category = parameters[ActionKey];
             }
+
             var notificationCategories = CrossPushNotification.Current?.GetUserNotificationCategories();
             if (notificationCategories != null && notificationCategories.Length > 0)
             {
@@ -305,24 +321,22 @@ namespace Plugin.PushNotification
                                 {
                                     intentFilter.AddAction($"{Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).PackageName}.{action.Id}");
                                 }
-
                             }
-
                         }
                     }
                 }
+
                 if (intentFilter != null)
                 {
-
                     PushNotificationManager.ActionReceiver = new PushNotificationActionReceiver();
                     context.RegisterReceiver(PushNotificationManager.ActionReceiver, intentFilter);
                 }
             }
 
+            OnBuildNotification(notificationBuilder, parameters);
 
             NotificationManager notificationManager = (NotificationManager)context.GetSystemService(Context.NotificationService);
             notificationManager.Notify(tag, notifyId, notificationBuilder.Build());
-
         }
 
         public void OnError(string error)
@@ -330,5 +344,11 @@ namespace Plugin.PushNotification
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnError - {error}");
         }
 
+        /// <summary>
+        /// Override to provide customization of the notification to build.
+        /// </summary>
+        /// <param name="notificationBuilder">Notification builder.</param>
+        /// <param name="parameters">Notification parameters.</param>
+        public virtual void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, string> parameters) { }
     }
 }

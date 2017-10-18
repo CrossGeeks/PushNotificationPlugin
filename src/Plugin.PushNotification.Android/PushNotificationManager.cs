@@ -11,6 +11,7 @@ using Firebase.Messaging;
 using Firebase;
 using Android.Content.PM;
 using System.Collections.ObjectModel;
+using Android.Graphics;
 
 namespace Plugin.PushNotification
 {
@@ -34,6 +35,7 @@ namespace Plugin.PushNotification
         public static string NotificationContentDataKey { get; set; }
         public static int IconResource { get; set; }
         public static Android.Net.Uri SoundUri { get; set; }
+        public static Color? Color { get; set; }
         
         static Context _context;
         public static void ProcessIntent(Intent intent, bool enableDelayedResponse = true)
