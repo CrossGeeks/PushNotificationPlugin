@@ -43,15 +43,11 @@ namespace Plugin.PushNotification
             Bundle extras = intent?.Extras;
             if (extras != null && !extras.IsEmpty)
             {
-
-                var parameters = new Dictionary<string, string>();
-
+                var parameters = new Dictionary<string, object>();
                 foreach (var key in extras.KeySet())
                 {
                     if (!parameters.ContainsKey(key) && extras.Get(key) != null)
-                    {
                         parameters.Add(key, $"{extras.Get(key)}");
-                    }
                 }
 
                 NotificationManager manager = _context.GetSystemService(Context.NotificationService) as NotificationManager;
@@ -59,38 +55,29 @@ namespace Plugin.PushNotification
                 if (notificationId != -1)
                 {
                     var notificationTag = extras.GetString(DefaultPushNotificationHandler.ActionNotificationTagKey, string.Empty);
-
                     if (notificationTag == null)
                         manager.Cancel(notificationId);
                     else
                         manager.Cancel(notificationTag, notificationId);
-
                 }
 
 
                 var response = new NotificationResponse(parameters, extras.GetString(DefaultPushNotificationHandler.ActionIdentifierKey, string.Empty));
 
                 if (_onNotificationOpened == null && enableDelayedResponse)
-                {
                     delayedNotificationResponse = response;
-                }
                 else
-                {
                     _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(response.Data, response.Identifier, response.Type));
-                }
-
 
                 CrossPushNotification.Current.NotificationHandler?.OnOpened(response);
-
             }
         }
+
         public static void Initialize(Context context, bool resetToken)
         {
             FirebaseApp.InitializeApp(context);
-
      
             _context = context;
-
 
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
 
@@ -291,7 +278,7 @@ namespace Plugin.PushNotification
         {
             _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(token));
         }
-        internal static void RegisterData(IDictionary<string, string> data)
+        internal static void RegisterData(IDictionary<string, object> data)
         {
             _onNotificationReceived?.Invoke(CrossPushNotification.Current, new PushNotificationDataEventArgs(data));
         }

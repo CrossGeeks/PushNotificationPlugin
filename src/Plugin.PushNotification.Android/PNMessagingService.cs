@@ -19,15 +19,29 @@ namespace Plugin.PushNotification
     {
         public override void OnMessageReceived(RemoteMessage message)
         {
-            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            var parameters = new Dictionary<string, object>();
             var notification = message.GetNotification();
             if (notification != null)
             {
                 if (!string.IsNullOrEmpty(notification.Body))
                     parameters.Add("body", notification.Body);
 
+                if (!string.IsNullOrEmpty(notification.BodyLocalizationKey))
+                    parameters.Add("body_loc_key", notification.BodyLocalizationKey);
+
+                var bodyLocArgs = notification.GetBodyLocalizationArgs();
+                if (bodyLocArgs != null && bodyLocArgs.Any())
+                    parameters.Add("body_loc_args", bodyLocArgs);
+
                 if (!string.IsNullOrEmpty(notification.Title))
                     parameters.Add("title", notification.Title);
+
+                if (!string.IsNullOrEmpty(notification.TitleLocalizationKey))
+                    parameters.Add("title_loc_key", notification.TitleLocalizationKey);
+
+                var titleLocArgs = notification.GetTitleLocalizationArgs();
+                if (titleLocArgs != null && titleLocArgs.Any())
+                    parameters.Add("title_loc_args", titleLocArgs);
 
                 if (!string.IsNullOrEmpty(notification.Tag))
                     parameters.Add("tag", notification.Tag);
