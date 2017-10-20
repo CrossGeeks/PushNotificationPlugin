@@ -77,9 +77,9 @@ namespace Plugin.PushNotification.Abstractions
 
     public class PushNotificationDataEventArgs : EventArgs
     {
-        public IDictionary<string, string> Data { get; }
+        public IDictionary<string, object> Data { get; }
 
-        public PushNotificationDataEventArgs(IDictionary<string, string> data)
+        public PushNotificationDataEventArgs(IDictionary<string, object> data)
         {
             Data = data;
         }
@@ -93,11 +93,11 @@ namespace Plugin.PushNotification.Abstractions
     {
         public string Identifier { get; }
 
-        public IDictionary<string, string> Data { get; }
+        public IDictionary<string, object> Data { get; }
 
         public NotificationCategoryType Type { get; }
 
-        public PushNotificationResponseEventArgs(IDictionary<string, string> data, string identifier = "", NotificationCategoryType type = NotificationCategoryType.Default)
+        public PushNotificationResponseEventArgs(IDictionary<string, object> data, string identifier = "", NotificationCategoryType type = NotificationCategoryType.Default)
         {
             Identifier = identifier;
             Data = data;

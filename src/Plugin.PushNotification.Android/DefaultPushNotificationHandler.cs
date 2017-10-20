@@ -16,6 +16,7 @@ using System.Collections.ObjectModel;
 using Android.Content.PM;
 using Android.Content.Res;
 using Android.Graphics;
+using Java.Util;
 
 namespace Plugin.PushNotification
 {
@@ -98,104 +99,72 @@ namespace Plugin.PushNotification
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
         }
 
-        public void OnReceived(IDictionary<string, string> parameters)
+        public void OnReceived(IDictionary<string, object> parameters)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnReceived");
 
-            if (parameters.ContainsKey(SilentKey) && (parameters[SilentKey] == "true" || parameters[SilentKey] == "1"))
-            {
+            if (parameters.TryGetValue(SilentKey, out object silent) && (silent.ToString() == "true" || silent.ToString() == "1"))
                 return;
-            }
 
             Context context = Application.Context;
 
             int notifyId = 0;
             string title = context.ApplicationInfo.LoadLabel(context.PackageManager);
-            string message = "";
-            string tag = "";
+            var message = string.Empty;
+            var tag = string.Empty;
 
-            if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTextKey) && parameters.ContainsKey(PushNotificationManager.NotificationContentTextKey))
-            {
-                message = parameters[PushNotificationManager.NotificationContentTextKey];
-            }
-            else if (parameters.ContainsKey(AlertKey))
-            {
-                message = $"{parameters[AlertKey]}";
-            }
-            else if (parameters.ContainsKey(BodyKey))
-            {
-                message = $"{parameters[BodyKey]}";
-            }
-            else if (parameters.ContainsKey(MessageKey))
-            {
-                message = $"{parameters[MessageKey]}";
-            }
-            else if (parameters.ContainsKey(SubtitleKey))
-            {
-                message = $"{parameters[SubtitleKey]}";
-            }
-            else if (parameters.ContainsKey(TextKey))
-            {
-                message = $"{parameters[TextKey]}";
-            }
+            if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTextKey) && parameters.TryGetValue(PushNotificationManager.NotificationContentTextKey, out object notificationContentText))
+                message = notificationContentText.ToString();
+            else if (parameters.TryGetValue(AlertKey, out object alert))
+                message = $"{alert}";
+            else if (parameters.TryGetValue(BodyKey, out object body))
+                message = $"{body}";
+            else if (parameters.TryGetValue(MessageKey, out object messageContent))
+                message = $"{messageContent}";
+            else if (parameters.TryGetValue(SubtitleKey, out object subtitle))
+                message = $"{subtitle}";
+            else if (parameters.TryGetValue(TextKey, out object text))
+                message = $"{text}";
 
-            if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTitleKey) && parameters.ContainsKey(PushNotificationManager.NotificationContentTitleKey))
-            {
-                title = parameters[PushNotificationManager.NotificationContentTitleKey];
-            }
-            else if (parameters.ContainsKey(TitleKey))
+            if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTitleKey) && parameters.TryGetValue(PushNotificationManager.NotificationContentTitleKey, out object notificationContentTitle))
+                title = notificationContentTitle.ToString();
+            else if (parameters.TryGetValue(TitleKey, out object titleContent))
             {
                 if (!string.IsNullOrEmpty(message))
-                {
-                    title = $"{parameters[TitleKey]}";
-                }
+                    title = $"{titleContent}";
                 else
-                {
-                    message = $"{parameters[TitleKey]}";
-                }
+                    message = $"{titleContent}";
             }
 
-            if (parameters.ContainsKey(IdKey))
+            if (parameters.TryGetValue(IdKey, out object id))
             {
-                var str = parameters[IdKey];
                 try
                 {
-                    notifyId = Convert.ToInt32(str);
+                    notifyId = Convert.ToInt32(id);
                 }
                 catch (Exception ex)
                 {
                     // Keep the default value of zero for the notify_id, but log the conversion problem.
-                    System.Diagnostics.Debug.WriteLine($"Failed to convert {str} to an integer {ex}");
+                    System.Diagnostics.Debug.WriteLine($"Failed to convert {id} to an integer {ex}");
                 }
             }
 
-            if (parameters.ContainsKey(TagKey))
-            {
-                tag = parameters[TagKey];
-            }
+            if (parameters.TryGetValue(TagKey, out object tagContent))
+                tag = tagContent.ToString();
 
             if (PushNotificationManager.SoundUri == null)
-            {
                 PushNotificationManager.SoundUri = RingtoneManager.GetDefaultUri(RingtoneType.Notification);
-            }
 
             try
             {
-
                 if (PushNotificationManager.IconResource == 0)
-                {
                     PushNotificationManager.IconResource = context.ApplicationInfo.Icon;
-                }
                 else
                 {
                     string name = context.Resources.GetResourceName(PushNotificationManager.IconResource);
-
                     if (name == null)
-                    {
                         PushNotificationManager.IconResource = context.ApplicationInfo.Icon;
-                    }
                 }
-
             }
             catch (Resources.NotFoundException ex)
             {
@@ -203,11 +172,11 @@ namespace Plugin.PushNotification
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
 
-            if (parameters.TryGetValue(ColorKey, out string color) && color != null)
+            if (parameters.TryGetValue(ColorKey, out object color) && color != null)
             {
                 try
                 {
-                    PushNotificationManager.Color = Color.ParseColor(color);
+                    PushNotificationManager.Color = Color.ParseColor(color.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -220,9 +189,7 @@ namespace Plugin.PushNotification
             //Intent resultIntent = new Intent(context, typeof(T));
             Bundle extras = new Bundle();
             foreach (var p in parameters)
-            {
-                extras.PutString(p.Key, p.Value);
-            }
+                extras.PutString(p.Key, p.Value.ToString());
 
             if (extras != null)
             {
@@ -244,6 +211,9 @@ namespace Plugin.PushNotification
                 .SetAutoCancel(true)
                 .SetContentIntent(pendingIntent);
 
+            // Try to resolve (and apply) localized parameters
+            ResolveLocalizedParameters(notificationBuilder, parameters);
+
             if (PushNotificationManager.Color != null)
                 notificationBuilder.SetColor(PushNotificationManager.Color.Value);
 
@@ -256,21 +226,15 @@ namespace Plugin.PushNotification
             }
 
             string category = string.Empty;
+            if (parameters.TryGetValue(CategoryKey, out object categoryContent))
+                category = categoryContent.ToString();
 
-            if (parameters.ContainsKey(CategoryKey))
-            {
-                category = parameters[CategoryKey];
-            }
-
-            if (parameters.ContainsKey(ActionKey))
-            {
-                category = parameters[ActionKey];
-            }
+            if (parameters.TryGetValue(ActionKey, out object actionContent))
+                category = actionContent.ToString();
 
             var notificationCategories = CrossPushNotification.Current?.GetUserNotificationCategories();
             if (notificationCategories != null && notificationCategories.Length > 0)
             {
-
                 IntentFilter intentFilter = null;
                 foreach (var userCat in notificationCategories)
                 {
@@ -339,6 +303,49 @@ namespace Plugin.PushNotification
             notificationManager.Notify(tag, notifyId, notificationBuilder.Build());
         }
 
+        /// <summary>
+        /// Resolves the localized parameters using the string resources, combining the key and the passed arguments of the notification.
+        /// </summary>
+        /// <param name="notificationBuilder">Notification builder.</param>
+        /// <param name="parameters">Parameters.</param>
+        private void ResolveLocalizedParameters(NotificationCompat.Builder notificationBuilder, IDictionary<string, object> parameters)
+        {
+            string getLocalizedString(string name, params string[] arguments)
+            {
+                var context = notificationBuilder.MContext;
+                var resources = context.Resources;
+                var identifier = resources.GetIdentifier(name, "string", context.PackageName);
+                var sanitizedArgs = arguments?.Where(it => it != null).Select(it => new Java.Lang.String(it)).Cast<Java.Lang.Object>().ToArray();
+
+                try { return resources.GetString(identifier, sanitizedArgs ?? new Java.Lang.Object[] { }); }
+                catch (UnknownFormatConversionException ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"{DomainTag}.ResolveLocalizedParameters - Incorrect string arguments {ex}");
+                    return null;
+                }
+            }
+
+            // Resolve title localization
+            if (parameters.TryGetValue("title_loc_key", out object titleKey))
+            {
+                parameters.TryGetValue("title_loc_args", out object titleArgs);
+
+                var localizedTitle = getLocalizedString(titleKey.ToString(), titleArgs as string[]);
+                if (localizedTitle != null)
+                    notificationBuilder.SetContentTitle(localizedTitle);
+            }
+
+            // Resolve body localization
+            if (parameters.TryGetValue("body_loc_key", out object bodyKey))
+            {
+                parameters.TryGetValue("body_loc_args", out object bodyArgs);
+
+                var localizedBody = getLocalizedString(bodyKey.ToString(), bodyArgs as string[]);
+                if (localizedBody != null)
+                    notificationBuilder.SetContentText(localizedBody);
+            }
+        }
+
         public void OnError(string error)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnError - {error}");
@@ -349,6 +356,6 @@ namespace Plugin.PushNotification
         /// </summary>
         /// <param name="notificationBuilder">Notification builder.</param>
         /// <param name="parameters">Notification parameters.</param>
-        public virtual void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, string> parameters) { }
+        public virtual void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, object> parameters) { }
     }
 }
