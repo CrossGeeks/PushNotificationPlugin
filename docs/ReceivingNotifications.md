@@ -25,8 +25,8 @@ On Firebase Cloud Messaging there are two types of messages that you can send to
         "other_key" : true,
         "body":"test"
      },
-     "priority": "high"
-    
+     "priority": "high",
+     "registration_ids" : ["eoPr8fUIPns:APA91bEVYODiWaL9a9JidumLRcFjVrEC4iHY80mHSE1e-udmPB32RjMiYL2P2vWTIUgYCJYVOx9SGSN_R4Ksau3vFX4WvkDj4ZstxqmcBhM3K-NMrX8P6U0sdDEqDpr-lD_N5JWBLCoV"]
 }
 ```
 
@@ -68,7 +68,8 @@ Android Silent Payload Sample:
         "body":"test",
 	"silent" : true
      },
-     "priority": "high"
+     "priority": "high",
+     "registration_ids" : ["eoPr8fUIPns:APA91bEVYODiWaL9a9JidumLRcFjVrEC4iHY80mHSE1e-udmPB32RjMiYL2P2vWTIUgYCJYVOx9SGSN_R4Ksau3vFX4WvkDj4ZstxqmcBhM3K-NMrX8P6U0sdDEqDpr-lD_N5JWBLCoV"]
 }
 ```
 
@@ -142,6 +143,9 @@ If plugin is not initialized with a push handler on Android by default the plugi
     //The sets the sound  uri will be used for the notification
     public static Android.Net.Uri SoundUri { get; set; }
 
+	//The sets the color will be used for the notification
+    public static Color? Color { get; set; }
+
    ```
    
 If **NotificationContentTitleKey** not set will look for **title** key value to set the title. If no title key present will use the application name as the notification title.
@@ -186,6 +190,10 @@ AppDelegate **FinishLaunching** on iOS:
 ```
 
 After this you should receive push notifications events in this implementation on your iOS/Android projects.
+
+### Android Specifics Customization
+
+To keep the default push notification handler functionality but make small adjustments or customizations to the notification. You can inherit from DefaultPushNotificationHandler and implement **OnBuildNotification** method which can be used to e.g. load an image from the web and set it as the 'LargeIcon' of a notification (notificationBuilder.SetLargeIcon) or other modifications to the resulting notification.
 
 ### iOS Specifics Customization
 

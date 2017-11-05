@@ -94,6 +94,16 @@ namespace Plugin.PushNotification
         /// </summary>
         public const string ColorKey = "color";
 
+        /// <summary>
+        /// Icon
+        /// </summary>
+        public const string IconKey = "icon";
+
+        /// <summary>
+        /// Sound
+        /// </summary>
+        public const string SoundKey = "sound";
+
         public void OnOpened(NotificationResponse response)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
@@ -152,11 +162,51 @@ namespace Plugin.PushNotification
             if (parameters.TryGetValue(TagKey, out object tagContent))
                 tag = tagContent.ToString();
 
+
+            try
+            {
+                if (parameters.TryGetValue(SoundKey, out object sound))
+                {
+                    var soundName = sound.ToString();
+
+                    int soundResId = context.Resources.GetIdentifier(soundName, "raw", context.PackageName);
+                    if (soundResId == 0 && soundName.IndexOf(".") != 1)
+                    {
+                        soundName = soundName.Substring(0, soundName.LastIndexOf('.'));
+                        soundResId = context.Resources.GetIdentifier(soundName, "raw", context.PackageName);
+                    }
+                    else
+                    {
+                        PushNotificationManager.SoundUri = new Android.Net.Uri.Builder()
+                                  .Scheme(ContentResolver.SchemeAndroidResource)
+                                  .Path($"{context.PackageName}/{soundResId}")
+                                  .Build();
+                    }
+                }
+            }
+            catch (Resources.NotFoundException ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+            }
+            
+
             if (PushNotificationManager.SoundUri == null)
                 PushNotificationManager.SoundUri = RingtoneManager.GetDefaultUri(RingtoneType.Notification);
 
             try
             {
+                if (parameters.TryGetValue(IconKey, out object icon) && icon != null)
+                {
+                    try
+                    {
+                        PushNotificationManager.IconResource = context.Resources.GetIdentifier(icon.ToString(), "drawable", Application.Context.PackageName);
+                    }
+                    catch (Resources.NotFoundException ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.ToString());
+                    }
+                }
+
                 if (PushNotificationManager.IconResource == 0)
                     PushNotificationManager.IconResource = context.ApplicationInfo.Icon;
                 else
@@ -186,7 +236,6 @@ namespace Plugin.PushNotification
 
             Intent resultIntent = context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
 
-            //Intent resultIntent = new Intent(context, typeof(T));
             Bundle extras = new Bundle();
             foreach (var p in parameters)
                 extras.PutString(p.Key, p.Value.ToString());
@@ -205,11 +254,20 @@ namespace Plugin.PushNotification
             var notificationBuilder = new NotificationCompat.Builder(context)
                 .SetSmallIcon(PushNotificationManager.IconResource)
                 .SetContentTitle(title)
-                .SetSound(PushNotificationManager.SoundUri)
                 .SetVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
                 .SetContentText(message)
                 .SetAutoCancel(true)
                 .SetContentIntent(pendingIntent);
+
+            try
+            {
+
+                notificationBuilder.SetSound(PushNotificationManager.SoundUri);
+            }
+            catch(Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"{DomainTag} - Failed to set sound {ex}");
+            }
 
             // Try to resolve (and apply) localized parameters
             ResolveLocalizedParameters(notificationBuilder, parameters);

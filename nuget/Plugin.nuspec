@@ -2,7 +2,7 @@
 <package >
   <metadata minClientVersion="2.8.1">
     <id>Plugin.PushNotification</id>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <title>Push Notification Plugin for Xamarin</title>
     <authors>Rendy Del Rosario</authors>
     <owners>crossgeeks</owners>
@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</description>
     <summary>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</summary>
-    <releaseNotes>Support for handling  push notifications</releaseNotes>
+    <releaseNotes>Extended Android's default push notification handler for easier and extensible customization, localization support, set icon/sound from payload</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>iOS,Android,push notifications,pcl,xamarin,plugins,xam.pcl,fcm,apn</tags>
     <dependencies>

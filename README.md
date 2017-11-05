@@ -21,6 +21,7 @@ Call **CrossPushNotification.Current** from any project or PCL to gain access to
 - Receive push notifications
 - Support for push notification category actions
 - Customize push notifications
+- Localization
 
 
 ## Documentation
@@ -30,6 +31,7 @@ Here you will find detailed documentation on setting up and using the Push Notif
 * [Getting Started](docs/GettingStarted.md)
 * [Receiving Push Notifications](docs/ReceivingNotifications.md)
 * [Notification Category Actions](docs/NotificationActions.md)
+* [Notification Localization](docs/LocalizedPushNotifications.md)
 * [FAQ](docs/FAQ.md)
 
 #### Contributors
