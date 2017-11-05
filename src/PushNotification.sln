@@ -13,6 +13,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Plugin.PushNotification.And
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Plugin.PushNotification.Shared", "Plugin.PushNotification.Shared\Plugin.PushNotification.Shared.shproj", "{E924F251-2F8D-46CC-A55A-A8630C07021D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39BF9949-28B0-4798-97BC-2298B0A22E60}"
+	ProjectSection(SolutionItems) = preProject
+		..\docs\FAQ.md = ..\docs\FAQ.md
+		..\docs\GettingStarted.md = ..\docs\GettingStarted.md
+		..\docs\LocalizedPushNotifications.md = ..\docs\LocalizedPushNotifications.md
+		..\docs\NotificationActions.md = ..\docs\NotificationActions.md
+		..\nuget\Plugin.nuspec = ..\nuget\Plugin.nuspec
+		..\README.md = ..\README.md
+		..\docs\ReceivingNotifications.md = ..\docs\ReceivingNotifications.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Plugin.PushNotification.Shared\Plugin.PushNotification.Shared.projitems*{2882aeeb-d4cd-4eb9-8a6c-6653b33681f0}*SharedItemsImports = 4
