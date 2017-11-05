@@ -6,7 +6,7 @@ When having an application available in multiple countries is very common to hav
 
 On iOS push notifications are associated with iOS default platform localization.
 
-> If you use a consistent set of messages for your notifications, you can store localized versions of the message text in your app bundle and use the loc-key and loc-args keys in your payload to specify which message to display. The loc-key and loc-args keys define the message content of the notification. When present, the local system searches the app’s Localizable.strings files for a key string matching the value in loc-key. It then uses the corresponding value from the strings file as the basis for the message text, replacing any placeholder values with the strings specified by the loc-args key. (You can also specify a title string for the notification using the title-loc-key and title-loc-args keys.). [Apple documentation](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html#//apple_ref/doc/uid/TP40008194-CH10-SW9)
+> If you use a consistent set of messages for your notifications, you can store localized versions of the message text in your app bundle and use the loc-key and loc-args keys in your payload to specify which message to display. The loc-key and loc-args keys define the message content of the notification. When present, the local system searches the appâ€™s Localizable.strings files for a key string matching the value in loc-key. It then uses the corresponding value from the strings file as the basis for the message text, replacing any placeholder values with the strings specified by the loc-args key. (You can also specify a title string for the notification using the title-loc-key and title-loc-args keys.). [Apple documentation](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html#//apple_ref/doc/uid/TP40008194-CH10-SW9)
 
 So you can use iOS default platform localization by following this brief guide:
 
@@ -183,6 +183,7 @@ The format for parameter replacement is: %[parameter index]$[format type].
 More information on string format for parameter replacing here:
 
 [Dyanmic string](https://stackoverflow.com/questions/3656371/dynamic-string-using-string-xml)
+
 [Formatting Resource Strings](https://code.tutsplus.com/tutorials/android-sdk-quick-tip-formatting-resource-strings--mobile-1775)
 
 More information on localization here:
