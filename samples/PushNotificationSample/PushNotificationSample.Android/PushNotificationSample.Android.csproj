@@ -55,10 +55,10 @@
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
     <Reference Include="Plugin.PushNotification, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Plugin.PushNotification.1.0.0\lib\MonoAndroid10\Plugin.PushNotification.dll</HintPath>
+      <HintPath>..\packages\Plugin.PushNotification.1.1.0\lib\MonoAndroid10\Plugin.PushNotification.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.PushNotification.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Plugin.PushNotification.1.0.0\lib\MonoAndroid10\Plugin.PushNotification.Abstractions.dll</HintPath>
+      <HintPath>..\packages\Plugin.PushNotification.1.1.0\lib\MonoAndroid10\Plugin.PushNotification.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
