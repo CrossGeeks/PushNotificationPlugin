@@ -129,6 +129,18 @@ namespace Plugin.PushNotification
             }
         }
 
+        public static async Task Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true)
+        {
+            CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
+            await Initialize(options, autoRegistration);
+        }
+        public static async Task Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true)
+        {
+
+            await Initialize(options, autoRegistration);
+            RegisterUserNotificationCategories(notificationUserCategories);
+
+        }
 
         static void RegisterUserNotificationCategories(NotificationUserCategory[] userCategories)
         {
