@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Plugin.PushNotification", "Plugin.PushNotification\Plugin.PushNotification.csproj", "{A6FCEF44-D2BA-42C7-B3CB-13667BCD7B54}"
 EndProject
@@ -15,8 +15,10 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Plugin.PushNotification.Sha
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39BF9949-28B0-4798-97BC-2298B0A22E60}"
 	ProjectSection(SolutionItems) = preProject
+		..\docs\AndroidCustomization.md = ..\docs\AndroidCustomization.md
 		..\docs\FAQ.md = ..\docs\FAQ.md
 		..\docs\GettingStarted.md = ..\docs\GettingStarted.md
+		..\docs\iOSCustomization.md = ..\docs\iOSCustomization.md
 		..\docs\LocalizedPushNotifications.md = ..\docs\LocalizedPushNotifications.md
 		..\docs\NotificationActions.md = ..\docs\NotificationActions.md
 		..\nuget\Plugin.nuspec = ..\nuget\Plugin.nuspec

@@ -7,6 +7,7 @@ using Android.Views;
 using Android.Widget;
 using Android.OS;
 using Plugin.PushNotification;
+using Android.Content;
 
 namespace PushNotificationSample.Droid
 {
@@ -23,6 +24,11 @@ namespace PushNotificationSample.Droid
             global::Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App());
             PushNotificationManager.ProcessIntent(Intent);
+        }
+        protected override void OnNewIntent(Intent intent)
+        {
+            base.OnNewIntent(intent);
+            PushNotificationManager.ProcessIntent(intent);
         }
     }
 }
