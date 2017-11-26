@@ -182,7 +182,7 @@ The format for parameter replacement is: %[parameter index]$[format type].
 
 More information on string format for parameter replacing here:
 
-[Dyanmic string](https://stackoverflow.com/questions/3656371/dynamic-string-using-string-xml)
+[Dynamic string](https://stackoverflow.com/questions/3656371/dynamic-string-using-string-xml)
 
 [Formatting Resource Strings](https://code.tutsplus.com/tutorials/android-sdk-quick-tip-formatting-resource-strings--mobile-1775)
 
