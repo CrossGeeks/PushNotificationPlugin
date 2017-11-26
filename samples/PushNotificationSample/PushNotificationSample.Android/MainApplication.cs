@@ -28,8 +28,11 @@ namespace PushNotificationSample.Droid
 #if DEBUG
             PushNotificationManager.Initialize(this, true);
 #else
-              PushNotificationManager.Initialize(this,false);
+            PushNotificationManager.Initialize(this,false);
 #endif
+            //Set the activity type that will handle your notifications
+            PushNotificationManager.NotificationActivityType = typeof(MainActivity);
+
 
             //Handle notification when app is closed here
             CrossPushNotification.Current.OnNotificationReceived += (s, p) =>

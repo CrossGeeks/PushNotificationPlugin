@@ -30,6 +30,8 @@ Here you will find detailed documentation on setting up and using the Push Notif
 
 * [Getting Started](docs/GettingStarted.md)
 * [Receiving Push Notifications](docs/ReceivingNotifications.md)
+* [Android Customization](docs/AndroidCustomization.md)
+* [iOS Customization](docs/iOSCustomization.md)
 * [Notification Category Actions](docs/NotificationActions.md)
 * [Notification Localization](docs/LocalizedPushNotifications.md)
 * [FAQ](docs/FAQ.md)

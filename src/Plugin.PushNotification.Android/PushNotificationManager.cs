@@ -36,7 +36,9 @@ namespace Plugin.PushNotification
         public static int IconResource { get; set; }
         public static Android.Net.Uri SoundUri { get; set; }
         public static Color? Color { get; set; }
-        
+        public static Type NotificationActivityType { get; set; }
+        public static ActivityFlags? NotificationActivityFlags { get; set; } = ActivityFlags.ClearTop | ActivityFlags.SingleTop;
+
         static Context _context;
         public static void ProcessIntent(Intent intent, bool enableDelayedResponse = true)
         {
