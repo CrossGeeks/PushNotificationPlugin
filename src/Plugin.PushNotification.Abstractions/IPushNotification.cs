@@ -85,8 +85,7 @@ namespace Plugin.PushNotification.Abstractions
         }
 
     }
-
-
+    
     public delegate void PushNotificationResponseEventHandler(object source, PushNotificationResponseEventArgs e);
 
     public class PushNotificationResponseEventArgs : EventArgs
@@ -127,6 +126,10 @@ namespace Plugin.PushNotification.Abstractions
         /// Event triggered when a notification is received
         /// </summary>
         event PushNotificationDataEventHandler OnNotificationReceived;
+        /// <summary>
+        /// Event triggered when a notification is deleted
+        /// </summary>
+        event PushNotificationDataEventHandler OnNotificationDeleted;
         /// <summary>
         /// Event triggered when there's an error
         /// </summary>

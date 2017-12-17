@@ -268,7 +268,12 @@ namespace Plugin.PushNotification
                 .SetContentText(message)
                 .SetAutoCancel(true)
                 .SetContentIntent(pendingIntent);
-            
+
+            var deleteIntent = new Intent();
+            deleteIntent.SetAction(PushNotificationManager.NotificationDeletedActionId);
+            var pendingDeleteIntent = PendingIntent.GetBroadcast(context, 0, deleteIntent, PendingIntentFlags.OneShot | PendingIntentFlags.UpdateCurrent);
+            notificationBuilder.SetDeleteIntent(pendingDeleteIntent);
+
             if (parameters.TryGetValue(PriorityKey, out object priority) && priority != null)
             {
                 var priorityValue = $"{priority}";
@@ -402,6 +407,7 @@ namespace Plugin.PushNotification
                                 {
                                     intentFilter.AddAction($"{Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).PackageName}.{action.Id}");
                                 }
+
                             }
                         }
                     }
@@ -409,6 +415,7 @@ namespace Plugin.PushNotification
 
                 if (intentFilter != null)
                 {
+                    
                     PushNotificationManager.ActionReceiver = new PushNotificationActionReceiver();
                     context.RegisterReceiver(PushNotificationManager.ActionReceiver, intentFilter);
                 }
