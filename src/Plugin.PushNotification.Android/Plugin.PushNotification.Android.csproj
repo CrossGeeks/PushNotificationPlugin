@@ -85,6 +85,7 @@
     <Compile Include="PNIIDService.cs" />
     <Compile Include="PNMessagingService.cs" />
     <Compile Include="PushNotificationActionReceiver.cs" />
+    <Compile Include="PushNotificationDeletedReceiver.cs" />
     <Compile Include="PushNotificationManager.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

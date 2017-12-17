@@ -28,6 +28,7 @@ namespace Plugin.PushNotification
         internal const string AppVersionCodeKey = "AppVersionCodeKey";
         internal const string AppVersionNameKey = "AppVersionNameKey";
         internal const string AppVersionPackageNameKey = "AppVersionPackageNameKey";
+        internal const string NotificationDeletedActionId = "Plugin.PushNotification.NotificationDeletedActionId";
         static ICollection<string> currentTopics = Android.App.Application.Context.GetSharedPreferences(KeyGroupName, FileCreationMode.Private).GetStringSet(TopicsKey, new Collection<string>());
         static IList<NotificationUserCategory> userNotificationCategories = new List<NotificationUserCategory>();
         public static string NotificationContentTitleKey { get; set; }
@@ -189,6 +190,19 @@ namespace Plugin.PushNotification
             }
         }
 
+        static PushNotificationDataEventHandler _onNotificationDeleted;
+        public event PushNotificationDataEventHandler OnNotificationDeleted
+        {
+            add
+            {
+                _onNotificationDeleted += value;
+            }
+            remove
+            {
+                _onNotificationDeleted -= value;
+            }
+        }
+
 
         public IPushNotificationHandler NotificationHandler { get; set; }
 
@@ -283,6 +297,10 @@ namespace Plugin.PushNotification
         internal static void RegisterData(IDictionary<string, object> data)
         {
             _onNotificationReceived?.Invoke(CrossPushNotification.Current, new PushNotificationDataEventArgs(data));
+        }
+        internal static void RegisterDelete(IDictionary<string, object> data)
+        {
+            _onNotificationDeleted?.Invoke(CrossPushNotification.Current, new PushNotificationDataEventArgs(data));
         }
         internal static void SaveToken(string token)
         {

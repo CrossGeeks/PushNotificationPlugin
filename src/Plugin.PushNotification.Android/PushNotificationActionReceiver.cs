@@ -19,7 +19,7 @@ namespace Plugin.PushNotification
         {
             IDictionary<string, object> parameters = new Dictionary<string, object>();
             var extras = intent.Extras;
-
+            
             if (extras != null && !extras.IsEmpty)
             {
                 foreach (var key in extras.KeySet())
@@ -29,8 +29,11 @@ namespace Plugin.PushNotification
                 }
             }
 
+         
             CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
             PushNotificationManager.RegisterData(parameters);
+            
+            
 
             NotificationManager manager = context.GetSystemService(Context.NotificationService) as NotificationManager;
             var notificationId = extras.GetInt(DefaultPushNotificationHandler.ActionNotificationIdKey, -1);

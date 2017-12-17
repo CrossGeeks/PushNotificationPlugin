@@ -59,7 +59,7 @@ namespace Plugin.PushNotification
                 if (!parameters.ContainsKey(d.Key))
                     parameters.Add(d.Key, d.Value);
             }
-
+          
             PushNotificationManager.RegisterData(parameters);
             CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
         }
