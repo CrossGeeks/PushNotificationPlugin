@@ -81,6 +81,19 @@ namespace Plugin.PushNotification
             }
         }
 
+        static PushNotificationDataEventHandler _onNotificationDeleted;
+        public event PushNotificationDataEventHandler OnNotificationDeleted
+        {
+            add
+            {
+                _onNotificationDeleted += value;
+            }
+            remove
+            {
+                _onNotificationDeleted -= value;
+            }
+        }
+
         public static async Task Initialize(NSDictionary options, bool autoRegistration = true)
         {
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();

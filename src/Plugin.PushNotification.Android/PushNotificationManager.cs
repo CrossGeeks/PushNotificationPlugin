@@ -39,6 +39,8 @@ namespace Plugin.PushNotification
         public static Color? Color { get; set; }
         public static Type NotificationActivityType { get; set; }
         public static ActivityFlags? NotificationActivityFlags { get; set; } = ActivityFlags.ClearTop | ActivityFlags.SingleTop;
+        public static string DefaultNotificationChannelId { get; set; } = "PushNotificationChannel";
+        public static string DefaultNotificationChannelName { get; set; } = "General";
 
         static Context _context;
         public static void ProcessIntent(Intent intent, bool enableDelayedResponse = true)
@@ -76,7 +78,7 @@ namespace Plugin.PushNotification
             }
         }
 
-        public static void Initialize(Context context, bool resetToken)
+        public static void Initialize(Context context, bool resetToken, bool createDefaultNotificationChannel = true)
         {
             FirebaseApp.InitializeApp(context);
      
@@ -131,12 +133,24 @@ namespace Plugin.PushNotification
 
             });
 
+            if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O && createDefaultNotificationChannel)
+            {
+                // Create channel to show notifications.
+                string channelId = DefaultNotificationChannelId;
+                string channelName = DefaultNotificationChannelName;
+                NotificationManager notificationManager = (NotificationManager)context.GetSystemService(Context.NotificationService);
+
+                notificationManager.CreateNotificationChannel(new NotificationChannel(channelId,
+                    channelName, NotificationImportance.Default));
+            }
+
+
             System.Diagnostics.Debug.WriteLine(CrossPushNotification.Current.Token);
         }
-        public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken)
+        public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true)
         {
 
-            Initialize(context, resetToken);
+            Initialize(context, resetToken,createDefaultNotificationChannel);
             RegisterUserNotificationCategories(notificationCategories);
 
         }
@@ -164,10 +178,10 @@ namespace Plugin.PushNotification
         }
 
 
-        public static void Initialize(Context context, IPushNotificationHandler pushNotificationHandler, bool resetToken)
+        public static void Initialize(Context context, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createDefaultNotificationChannel = true)
         {
             CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
-            Initialize(context, resetToken);
+            Initialize(context, resetToken,createDefaultNotificationChannel);
         }
 
         public static void ClearUserNotificationCategories()
