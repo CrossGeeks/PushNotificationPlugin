@@ -29,7 +29,7 @@ Add google-services.json to Android project. Make sure build action is GoogleSer
 
 ![ADD JSON](https://github.com/CrossGeeks/FirebasePushNotificationPlugin/blob/master/images/android-googleservices-json.png?raw=true)
 
-Must compile against 24+ as plugin is using API 24 specific things. Here is a great breakdown: http://redth.codes/such-android-api-levels-much-confuse-wow/ (Android project must be compiled using 7.0+ target framework)
+Must compile against 26+ as plugin is using API 26 specific things. Here is a great breakdown: http://redth.codes/such-android-api-levels-much-confuse-wow/ (Android project must be compiled using 8.0+ target framework)
 
 ### Android Initialization
 
@@ -195,6 +195,13 @@ Once token is registered/refreshed you will get it on **OnTokenRefresh** event.
   event PushNotificationResponseEventHandler OnNotificationOpened;
 ```
 
+```csharp 
+   /// <summary>
+   /// Event triggered when a notification is deleted (Android Only)
+   /// </summary>
+   event PushNotificationDataEventHandler OnNotificationDeleted;
+```
+
 ```csharp        
   /// <summary>
   /// Event triggered when there's an error
@@ -241,6 +248,17 @@ Push message opened event usage sample:
                 }
              
  };
+```
+Push message deleted event usage sample: (Android Only)
+```csharp
+
+  CrossFirebasePushNotification.Current.OnNotificationDeleted+= (s,p) =>
+  {
+ 
+        System.Diagnostics.Debug.WriteLine("Deleted");
+    
+  };
+
 ```
 
 Plugin by default provides some notification customization features for each platform. Check out the [Android Customization](AndroidCustomization.md) and [iOS Customization](iOSCustomization.md) sections.

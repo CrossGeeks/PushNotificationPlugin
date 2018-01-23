@@ -127,7 +127,7 @@ namespace Plugin.PushNotification.Abstractions
         /// </summary>
         event PushNotificationDataEventHandler OnNotificationReceived;
         /// <summary>
-        /// Event triggered when a notification is deleted
+        /// Event triggered when a notification is deleted (Android Only)
         /// </summary>
         event PushNotificationDataEventHandler OnNotificationDeleted;
         /// <summary>

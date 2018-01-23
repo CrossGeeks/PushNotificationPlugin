@@ -55,10 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Plugin.PushNotification, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Plugin.PushNotification.1.1.5\lib\netstandard1.0\Plugin.PushNotification.dll</HintPath>
+      <HintPath>..\packages\Plugin.PushNotification.1.2.2\lib\netstandard1.0\Plugin.PushNotification.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.PushNotification.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Plugin.PushNotification.1.1.5\lib\netstandard1.0\Plugin.PushNotification.Abstractions.dll</HintPath>
+      <HintPath>..\packages\Plugin.PushNotification.1.2.2\lib\netstandard1.0\Plugin.PushNotification.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Xamarin.Forms.2.3.4.247\lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.Core.dll</HintPath>
