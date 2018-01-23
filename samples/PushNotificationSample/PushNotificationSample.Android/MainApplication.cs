@@ -33,6 +33,16 @@ namespace PushNotificationSample.Droid
             //Set the activity type that will handle your notifications
             PushNotificationManager.NotificationActivityType = typeof(MainActivity);
 
+            //Set the default notification channel for your app when running Android Oreo
+            if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O)
+            {
+                //Change for your default notification channel id here
+                PushNotificationManager.DefaultNotificationChannelId = "DefaultChannel";
+
+                //Change for your default notification channel name here
+                PushNotificationManager.DefaultNotificationChannelName = "General";
+            }
+
 
             //Handle notification when app is closed here
             CrossPushNotification.Current.OnNotificationReceived += (s, p) =>
