@@ -2,7 +2,7 @@
 <package >
   <metadata minClientVersion="2.8.1">
     <id>Plugin.PushNotification</id>
-    <version>1.2.2</version>
+    <version>1.2.4</version>
     <title>Push Notification Plugin for Xamarin</title>
     <authors>Rendy Del Rosario</authors>
     <owners>crossgeeks</owners>
@@ -16,6 +16,9 @@
     <copyright>Copyright 2017</copyright>
     <tags>iOS,Android,push notifications,pcl,xamarin,plugins,xam.pcl,fcm,apn</tags>
     <dependencies>
+        <group targetFramework="netstandard1.0">
+          <dependency id="NETStandard.Library" version="1.6.1" />
+        </group>
         <group targetFramework="MonoAndroid80">
           <dependency id="Xamarin.Firebase.Messaging" version="[60.1142.0]" />
         </group>
