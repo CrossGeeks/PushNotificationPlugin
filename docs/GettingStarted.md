@@ -262,7 +262,7 @@ Push message opened event usage sample:
 Push message deleted event usage sample: (Android Only)
 ```csharp
 
-  CrossFirebasePushNotification.Current.OnNotificationDeleted+= (s,p) =>
+  CrossPushNotification.Current.OnNotificationDeleted+= (s,p) =>
   {
  
         System.Diagnostics.Debug.WriteLine("Deleted");
