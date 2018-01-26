@@ -108,6 +108,18 @@ Android Silent Payload Sample:
 
 **Note: This is the event were you will navigate to an specific page/activity/viewcontroller, if needed**
 
+**OnNotificationDeleted** (Android Only)
+```csharp
+
+  CrossePushNotification.Current.OnNotificationDeleted += (s,p) =>
+  {
+ 
+        System.Diagnostics.Debug.WriteLine("Deleted");
+    
+  };
+
+```
+
 ### Push Notification Handler
 
 A push notification handler is the way to provide ui push notification customization(on Android) and events feedback on native platforms by using **IPushNotificationHandler** interface. The plugin has a default push notification handler implementation and it's the one used by default.
