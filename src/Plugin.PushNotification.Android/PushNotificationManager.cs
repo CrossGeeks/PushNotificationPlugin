@@ -20,13 +20,11 @@ namespace Plugin.PushNotification
         internal static PushNotificationActionReceiver ActionReceiver = null;
         static NotificationResponse delayedNotificationResponse = null;
         internal const string KeyGroupName = "Plugin.PushNotification";
-        internal const string TopicsKey = "TopicsKey";
         internal const string TokenKey = "TokenKey";
         internal const string AppVersionCodeKey = "AppVersionCodeKey";
         internal const string AppVersionNameKey = "AppVersionNameKey";
         internal const string AppVersionPackageNameKey = "AppVersionPackageNameKey";
         internal const string NotificationDeletedActionId = "Plugin.PushNotification.NotificationDeletedActionId";
-        static ICollection<string> currentTopics = Android.App.Application.Context.GetSharedPreferences(KeyGroupName, FileCreationMode.Private).GetStringSet(TopicsKey, new Collection<string>());
         static IList<NotificationUserCategory> userNotificationCategories = new List<NotificationUserCategory>();
         public static string NotificationContentTitleKey { get; set; }
         public static string NotificationContentTextKey { get; set; }
@@ -217,21 +215,6 @@ namespace Plugin.PushNotification
 
         public IPushNotificationHandler NotificationHandler { get; set; }
 
-        public string[] SubscribedTopics
-        {
-            get
-            {
-                IList<string> topics = new List<string>();
-
-                foreach (var t in currentTopics)
-                {
-
-                    topics.Add(t);
-                }
-
-                return topics.ToArray();
-            }
-        }
         static PushNotificationResponseEventHandler _onNotificationOpened;
         public event PushNotificationResponseEventHandler OnNotificationOpened
         {
