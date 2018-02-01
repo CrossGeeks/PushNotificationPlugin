@@ -57,6 +57,8 @@ iOS Silent Payload Sample:
 }
 ```
 
+If  "content-available" : 1 is not sent then you have to tap on the notification for it to be received on the application.
+
 On Android to get a silent notification you should send "silent" : true inside the "data" payload key.
 
 Android Silent Payload Sample:
