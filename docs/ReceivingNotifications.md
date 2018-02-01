@@ -44,7 +44,7 @@ https://developer.apple.com/library/content/documentation/NetworkingInternet/Con
 
 ## Configuring a Silent Notification
 
-On iOS to get a silent notification you should send "content_available" : 1 inside the "aps" payload key.
+On iOS to get a silent notification you should send "content-available" : 1 inside the "aps" payload key.
 
 iOS Silent Payload Sample:
 ```json
