@@ -220,8 +220,9 @@ namespace Plugin.PushNotification
         {
             add
             {
+                var previousVal = _onNotificationOpened;
                 _onNotificationOpened += value;
-                if (delayedNotificationResponse != null && _onNotificationOpened == null)
+                if (delayedNotificationResponse != null && previousVal == null)
                 {
                     var tmpParams = delayedNotificationResponse;
                     _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(tmpParams.Data, tmpParams.Identifier, tmpParams.Type));
