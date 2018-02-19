@@ -13,7 +13,6 @@ using Android.Widget;
 namespace Plugin.PushNotification
 {
     [BroadcastReceiver]
-    [IntentFilter(new[] { PushNotificationManager.NotificationDeletedActionId })]
     public class PushNotificationDeletedReceiver : BroadcastReceiver
     {
         public override void OnReceive(Context context, Intent intent)

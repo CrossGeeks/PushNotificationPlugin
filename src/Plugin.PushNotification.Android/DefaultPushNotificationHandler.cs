@@ -247,7 +247,7 @@ namespace Plugin.PushNotification
                 }
             }
 
-            Intent resultIntent = typeof(Activity).IsAssignableFrom(PushNotificationManager.NotificationActivityType) ? new Intent(Application.Context, PushNotificationManager.NotificationActivityType) : context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
+            Intent resultIntent = typeof(Activity).IsAssignableFrom(PushNotificationManager.NotificationActivityType) ? new Intent(Application.Context, PushNotificationManager.NotificationActivityType) : (PushNotificationManager.DefaultNotificationActivityType == null ? context.PackageManager.GetLaunchIntentForPackage(context.PackageName): new Intent(Application.Context, PushNotificationManager.DefaultNotificationActivityType));
 
             Bundle extras = new Bundle();
             foreach (var p in parameters)
@@ -264,8 +264,8 @@ namespace Plugin.PushNotification
             {
                 resultIntent.SetFlags(PushNotificationManager.NotificationActivityFlags.Value);
             }
-
-            var pendingIntent = PendingIntent.GetActivity(context, 0, resultIntent, PendingIntentFlags.OneShot | PendingIntentFlags.UpdateCurrent);
+            int requestCode = new Java.Util.Random().NextInt();
+            var pendingIntent = PendingIntent.GetActivity(context, requestCode, resultIntent,  PendingIntentFlags.UpdateCurrent);
 
             var chanId = PushNotificationManager.DefaultNotificationChannelId;
             if (parameters.TryGetValue(ChannelIdKey, out object channelId) && channelId != null)
@@ -280,9 +280,8 @@ namespace Plugin.PushNotification
                 .SetAutoCancel(true)
                 .SetContentIntent(pendingIntent);
 
-            var deleteIntent = new Intent();
-            deleteIntent.SetAction(PushNotificationManager.NotificationDeletedActionId);
-            var pendingDeleteIntent = PendingIntent.GetBroadcast(context, 0, deleteIntent, PendingIntentFlags.OneShot | PendingIntentFlags.UpdateCurrent);
+            var deleteIntent = new Intent(context,typeof(PushNotificationDeletedReceiver));
+            var pendingDeleteIntent = PendingIntent.GetBroadcast(context, requestCode, deleteIntent, PendingIntentFlags.CancelCurrent);
             notificationBuilder.SetDeleteIntent(pendingDeleteIntent);
 
             if (Build.VERSION.SdkInt < Android.OS.BuildVersionCodes.O)
@@ -371,7 +370,7 @@ namespace Plugin.PushNotification
                 {
                     if (userCat != null && userCat.Actions != null && userCat.Actions.Count > 0)
                     {
-
+                        var aRequestCode = Guid.NewGuid().GetHashCode();
                         foreach (var action in userCat.Actions)
                         {
                             if (userCat.Category.Equals(category, StringComparison.CurrentCultureIgnoreCase))
@@ -382,57 +381,33 @@ namespace Plugin.PushNotification
 
                                 if (action.Type == NotificationActionType.Foreground)
                                 {
-                                    actionIntent = typeof(Activity).IsAssignableFrom(PushNotificationManager.NotificationActivityType) ? new Intent(Application.Context, PushNotificationManager.NotificationActivityType) : context.PackageManager.GetLaunchIntentForPackage(context.PackageName);
+                                    actionIntent = typeof(Activity).IsAssignableFrom(PushNotificationManager.NotificationActivityType) ? new Intent(Application.Context, PushNotificationManager.NotificationActivityType) : (PushNotificationManager.DefaultNotificationActivityType == null ? context.PackageManager.GetLaunchIntentForPackage(context.PackageName) : new Intent(Application.Context, PushNotificationManager.DefaultNotificationActivityType));
 
                                     if (PushNotificationManager.NotificationActivityFlags !=null)
                                     {
                                         actionIntent.SetFlags(PushNotificationManager.NotificationActivityFlags.Value);
                                     }
                                    
-                                    actionIntent.SetAction($"{action.Id}");
                                     extras.PutString(ActionIdentifierKey, action.Id);
                                     actionIntent.PutExtras(extras);
-                                    pendingActionIntent = PendingIntent.GetActivity(context, 0, actionIntent, PendingIntentFlags.OneShot | PendingIntentFlags.UpdateCurrent);
+                                    pendingActionIntent = PendingIntent.GetActivity(context, aRequestCode, actionIntent,  PendingIntentFlags.UpdateCurrent);
 
                                 }
                                 else
                                 {
-                                    actionIntent = new Intent();
-                                    //actionIntent.SetAction($"{category}.{action.Id}");
-                                    actionIntent.SetAction($"{Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).PackageName}.{action.Id}");
+                                    actionIntent = new Intent(context,typeof(PushNotificationActionReceiver));
                                     extras.PutString(ActionIdentifierKey, action.Id);
                                     actionIntent.PutExtras(extras);
-                                    pendingActionIntent = PendingIntent.GetBroadcast(context, 0, actionIntent, PendingIntentFlags.OneShot | PendingIntentFlags.UpdateCurrent);
+                                    pendingActionIntent = PendingIntent.GetBroadcast(context, aRequestCode, actionIntent,  PendingIntentFlags.UpdateCurrent);
 
                                 }
 
                                 notificationBuilder.AddAction(context.Resources.GetIdentifier(action.Icon, "drawable", Application.Context.PackageName), action.Title, pendingActionIntent);
                             }
-
-
-                            if (PushNotificationManager.ActionReceiver == null)
-                            {
-                                if (intentFilter == null)
-                                {
-                                    intentFilter = new IntentFilter();
-                                }
-
-                                if (!intentFilter.HasAction(action.Id))
-                                {
-                                    intentFilter.AddAction($"{Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).PackageName}.{action.Id}");
-                                }
-
-                            }
                         }
                     }
                 }
 
-                if (intentFilter != null)
-                {
-                    
-                    PushNotificationManager.ActionReceiver = new PushNotificationActionReceiver();
-                    context.RegisterReceiver(PushNotificationManager.ActionReceiver, intentFilter);
-                }
             }
 
             OnBuildNotification(notificationBuilder, parameters);

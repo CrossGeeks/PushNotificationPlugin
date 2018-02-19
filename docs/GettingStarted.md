@@ -37,11 +37,11 @@ You should initialize the plugin on an Android Application class if you don't ha
 
 There are 3 overrides to **PushNotificationManager.Initialize**:
 
-- **PushNotificationManager.Initialize(Context context, bool resetToken)** : Default method to initialize plugin without supporting any user notification categories. Uses a DefaultPushHandler to provide the ui for the notification.
+- **PushNotificationManager.Initialize(Context context, bool resetToken,bool createDefaultNotificationChannel, bool autoRegistration)** : Default method to initialize plugin without supporting any user notification categories. Uses a DefaultPushHandler to provide the ui for the notification.
 
-- **PushNotificationManager.Initialize(Context context, NotificationUserCategory[] categories, bool resetToken)**  : Initializes plugin using user notification categories. Uses a DefaultPushHandler to provide the ui for the notification supporting buttons based on the action_click send on the notification
+- **PushNotificationManager.Initialize(Context context, NotificationUserCategory[] categories, bool resetToken,bool createDefaultNotificationChannel, bool autoRegistration)**  : Initializes plugin using user notification categories. Uses a DefaultPushHandler to provide the ui for the notification supporting buttons based on the action_click send on the notification
 
-- **PushNotificationManager.Initialize(Context context,IPushNotificationHandler pushHandler, bool resetToken)** : Initializes the plugin using a custom push notification handler to provide custom ui and behaviour notifications receipt and opening.
+- **PushNotificationManager.Initialize(Context context,IPushNotificationHandler pushHandler, bool resetToken,bool createDefaultNotificationChannel, bool autoRegistration)** : Initializes the plugin using a custom push notification handler to provide custom ui and behaviour notifications receipt and opening.
 
 **Important: While debugging set resetToken parameter to true.**
 
@@ -88,7 +88,7 @@ Example of initialization:
 
 ```
 
-By default the plugin launches the main launcher activity when you tap at a notification, but you can change this behaviour by setting the type of the activity you want to be launch on *PushNotificationManager.NotificationActivityType**
+By default the plugin launches the activity where you are calling **ProcessIntent** when you tap at a notification, but you can change this behaviour by setting the type of the activity you want to be launch on *PushNotificationManager.NotificationActivityType**
 
 If you set **PushNotificationManager.NotificationActivityType** then put the following call on the **OnCreate** of activity of the type set. If not set then put it on your main launcher activity **OnCreate** method (On the Activity you got MainLauncher= true set)
 
@@ -99,7 +99,7 @@ If you set **PushNotificationManager.NotificationActivityType** then put the fol
 
 			//Other initialization stuff
 
-            PushNotificationManager.ProcessIntent(Intent);
+            PushNotificationManager.ProcessIntent(this,Intent);
         }
 
  ```
@@ -116,7 +116,7 @@ If you set **PushNotificationManager.NotificationActivityFlags** to ActivityFlag
 	    protected override void OnNewIntent(Intent intent)
         {
             base.OnNewIntent(intent);
-            PushNotificationManager.ProcessIntent(intent);
+            PushNotificationManager.ProcessIntent(this,intent);
         }
  ```
 
@@ -138,9 +138,9 @@ There are 3 overrides to **PushNotificationManager.Initialize**:
 
 - **PushNotificationManager.Initialize(NSDictionary options,bool autoRegistration)** : Default method to initialize plugin without supporting any user notification categories. Auto registers for push notifications if second parameter is true.
 
-- **PushNotificationManager.Initialize(NSDictionary options, NotificationUserCategory[] categories)**  : Initializes plugin using user notification categories to support iOS notification actions.
+- **PushNotificationManager.Initialize(NSDictionary options, NotificationUserCategory[] categories,bool autoRegistration)**  : Initializes plugin using user notification categories to support iOS notification actions.
 
-- **PushNotificationManager.Initialize(NSDictionary options,IPushNotificationHandler pushHandler)** : Initializes the plugin using a custom push notification handler to provide native feedback of notifications event on the native platform.
+- **PushNotificationManager.Initialize(NSDictionary options,IPushNotificationHandler pushHandle,bool autoRegistration)** : Initializes the plugin using a custom push notification handler to provide native feedback of notifications event on the native platform.
 
 
 Call  **PushNotificationManager.Initialize** on AppDelegate FinishedLaunching
@@ -177,6 +177,17 @@ Also should override these methods and make the following calls:
 
 ## Using Push Notification APIs
 It is drop dead simple to gain access to the PushNotification APIs in any project. All you need to do is get a reference to the current instance of IPushNotification via `CrossPushNotification.Current`:
+
+### On Demand Registration
+
+When plugin initializes by default auto registers the device for push notifications. If needed you can do on demand registration by turning off auto registration when initializing the plugin.
+
+Use the following method for on demand registration:
+
+```csharp
+   CrossPushNotification.Current.RegisterForPushNotifications();
+```
+
 
 ### Events
 

@@ -9,6 +9,7 @@ using System.Threading;
 using Android.Content.PM;
 using System.Collections.ObjectModel;
 using Android.Graphics;
+using Firebase.Iid;
 
 namespace Plugin.PushNotification
 {
@@ -17,14 +18,13 @@ namespace Plugin.PushNotification
   /// </summary>
   public class PushNotificationManager : IPushNotification
   {
-        internal static PushNotificationActionReceiver ActionReceiver = null;
+        //internal static PushNotificationActionReceiver ActionReceiver = null;
         static NotificationResponse delayedNotificationResponse = null;
         internal const string KeyGroupName = "Plugin.PushNotification";
         internal const string TokenKey = "TokenKey";
         internal const string AppVersionCodeKey = "AppVersionCodeKey";
         internal const string AppVersionNameKey = "AppVersionNameKey";
         internal const string AppVersionPackageNameKey = "AppVersionPackageNameKey";
-        internal const string NotificationDeletedActionId = "Plugin.PushNotification.NotificationDeletedActionId";
         static IList<NotificationUserCategory> userNotificationCategories = new List<NotificationUserCategory>();
         public static string NotificationContentTitleKey { get; set; }
         public static string NotificationContentTextKey { get; set; }
@@ -37,7 +37,11 @@ namespace Plugin.PushNotification
         public static string DefaultNotificationChannelId { get; set; } = "PushNotificationChannel";
         public static string DefaultNotificationChannelName { get; set; } = "General";
 
+        internal static Type DefaultNotificationActivityType { get; set; } = null;
+
         static Context _context;
+
+        [Obsolete("ProcessIntent is deprecated, please use the other override instead.")]
         public static void ProcessIntent(Intent intent, bool enableDelayedResponse = true)
         {
             Bundle extras = intent?.Extras;
@@ -73,60 +77,93 @@ namespace Plugin.PushNotification
             }
         }
 
-        public static void Initialize(Context context, bool resetToken, bool createDefaultNotificationChannel = true)
+        public static void ProcessIntent(Activity activity,Intent intent, bool enableDelayedResponse = true)
         {
-           //FirebaseApp.InitializeApp(context);
-     
+            DefaultNotificationActivityType = activity.GetType();
+
+            Bundle extras = intent?.Extras;
+            if (extras != null && !extras.IsEmpty)
+            {
+                var parameters = new Dictionary<string, object>();
+                foreach (var key in extras.KeySet())
+                {
+                    if (!parameters.ContainsKey(key) && extras.Get(key) != null)
+                        parameters.Add(key, $"{extras.Get(key)}");
+                }
+
+                NotificationManager manager = _context.GetSystemService(Context.NotificationService) as NotificationManager;
+                var notificationId = extras.GetInt(DefaultPushNotificationHandler.ActionNotificationIdKey, -1);
+                if (notificationId != -1)
+                {
+                    var notificationTag = extras.GetString(DefaultPushNotificationHandler.ActionNotificationTagKey, string.Empty);
+                    if (notificationTag == null)
+                        manager.Cancel(notificationId);
+                    else
+                        manager.Cancel(notificationTag, notificationId);
+                }
+
+
+                var response = new NotificationResponse(parameters, extras.GetString(DefaultPushNotificationHandler.ActionIdentifierKey, string.Empty));
+
+                if (_onNotificationOpened == null && enableDelayedResponse)
+                    delayedNotificationResponse = response;
+                else
+                    _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(response.Data, response.Identifier, response.Type));
+
+                CrossPushNotification.Current.NotificationHandler?.OnOpened(response);
+            }
+        }
+
+        public static void Initialize(Context context, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
+        {
             _context = context;
 
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
-
-            ThreadPool.QueueUserWorkItem(state =>
+            if(autoRegistration)
             {
-
-                var packageName = Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).PackageName;
-                var versionCode = Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).VersionCode;
-                var versionName = Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).VersionName;
-                var prefs = Android.App.Application.Context.GetSharedPreferences(PushNotificationManager.KeyGroupName, FileCreationMode.Private);
-
-                try
+                ThreadPool.QueueUserWorkItem(state =>
                 {
 
-                    var storedVersionName = prefs.GetString(PushNotificationManager.AppVersionNameKey, string.Empty);
-                    var storedVersionCode = prefs.GetString(PushNotificationManager.AppVersionCodeKey, string.Empty);
-                    var storedPackageName = prefs.GetString(PushNotificationManager.AppVersionPackageNameKey, string.Empty);
+                    var packageName = Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).PackageName;
+                    var versionCode = Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).VersionCode;
+                    var versionName = Application.Context.PackageManager.GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).VersionName;
+                    var prefs = Android.App.Application.Context.GetSharedPreferences(PushNotificationManager.KeyGroupName, FileCreationMode.Private);
 
-
-                    if (resetToken || (!string.IsNullOrEmpty(storedPackageName) && (!storedPackageName.Equals(packageName, StringComparison.CurrentCultureIgnoreCase) || !storedVersionName.Equals(versionName, StringComparison.CurrentCultureIgnoreCase) || !storedVersionCode.Equals($"{versionCode}", StringComparison.CurrentCultureIgnoreCase))))
+                    try
                     {
-                        CleanUp();
+
+                        var storedVersionName = prefs.GetString(PushNotificationManager.AppVersionNameKey, string.Empty);
+                        var storedVersionCode = prefs.GetString(PushNotificationManager.AppVersionCodeKey, string.Empty);
+                        var storedPackageName = prefs.GetString(PushNotificationManager.AppVersionPackageNameKey, string.Empty);
+
+
+                        if (resetToken || (!string.IsNullOrEmpty(storedPackageName) && (!storedPackageName.Equals(packageName, StringComparison.CurrentCultureIgnoreCase) || !storedVersionName.Equals(versionName, StringComparison.CurrentCultureIgnoreCase) || !storedVersionCode.Equals($"{versionCode}", StringComparison.CurrentCultureIgnoreCase))))
+                        {
+                            CleanUp();
+
+                        }
 
                     }
-
-                }
-                catch (Exception ex)
-                {
-                    _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(ex.ToString()));
-                }
-                finally
-                {
-                    var editor = prefs.Edit();
-                    editor.PutString(PushNotificationManager.AppVersionNameKey, $"{versionName}");
-                    editor.PutString(PushNotificationManager.AppVersionCodeKey, $"{versionCode}");
-                    editor.PutString(PushNotificationManager.AppVersionPackageNameKey, $"{packageName}");
-                    editor.Commit();
-                }
+                    catch (Exception ex)
+                    {
+                        _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.UnregistrationFailed, ex.ToString()));
+                    }
+                    finally
+                    {
+                        var editor = prefs.Edit();
+                        editor.PutString(PushNotificationManager.AppVersionNameKey, $"{versionName}");
+                        editor.PutString(PushNotificationManager.AppVersionCodeKey, $"{versionCode}");
+                        editor.PutString(PushNotificationManager.AppVersionPackageNameKey, $"{packageName}");
+                        editor.Commit();
+                    }
 
 
-                var token = Firebase.Iid.FirebaseInstanceId.Instance.Token;
-                if (!string.IsNullOrEmpty(token))
-                {
-
-                    SaveToken(token);
-                }
+                    CrossPushNotification.Current.RegisterForPushNotifications();
 
 
-            });
+                });
+            }
+
 
             if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O && createDefaultNotificationChannel)
             {
@@ -142,13 +179,32 @@ namespace Plugin.PushNotification
 
             System.Diagnostics.Debug.WriteLine(CrossPushNotification.Current.Token);
         }
-        public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true)
+        public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
         {
 
-            Initialize(context, resetToken,createDefaultNotificationChannel);
+            Initialize(context, resetToken,createDefaultNotificationChannel,autoRegistration);
             RegisterUserNotificationCategories(notificationCategories);
 
         }
+
+        public async System.Threading.Tasks.Task RegisterForPushNotifications()
+        {
+            await System.Threading.Tasks.Task.Run(() =>
+            {
+                var token = FirebaseInstanceId.Instance.Token;
+                if (!string.IsNullOrEmpty(token))
+                {
+
+                    SaveToken(token);
+                }
+            });
+
+        }
+        public void UnregisterForPushNotifications()
+        {
+            Reset();
+        }
+
         public static void Reset()
         {
             try
@@ -160,7 +216,7 @@ namespace Plugin.PushNotification
             }
             catch (Exception ex)
             {
-                _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(ex.ToString()));
+                _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.UnregistrationFailed, ex.ToString()));
             }
 
 
@@ -173,10 +229,10 @@ namespace Plugin.PushNotification
         }
 
 
-        public static void Initialize(Context context, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createDefaultNotificationChannel = true)
+        public static void Initialize(Context context, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
         {
             CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
-            Initialize(context, resetToken,createDefaultNotificationChannel);
+            Initialize(context, resetToken,createDefaultNotificationChannel,autoRegistration);
         }
 
         public static void ClearUserNotificationCategories()

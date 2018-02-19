@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Plugin.PushNotification.Abstractions
 {
@@ -9,6 +10,14 @@ namespace Plugin.PushNotification.Abstractions
         AuthenticationRequired, //Only applies for iOS
         Foreground,
         Destructive  //Only applies for iOS
+    }
+
+    public enum PushNotificationErrorType
+    {
+        Unknown,
+        PermissionDenied,
+        RegistrationFailed,
+        UnregistrationFailed
     }
     public class NotificationUserCategory
     {
@@ -64,10 +73,12 @@ namespace Plugin.PushNotification.Abstractions
 
     public class PushNotificationErrorEventArgs : EventArgs
     {
+        public PushNotificationErrorType Type;
         public string Message { get; }
 
-        public PushNotificationErrorEventArgs(string message)
+        public PushNotificationErrorEventArgs(PushNotificationErrorType type,string message)
         {
+            Type = type;
             Message = message;
         }
 
@@ -134,6 +145,16 @@ namespace Plugin.PushNotification.Abstractions
         /// Event triggered when there's an error
         /// </summary>
         event PushNotificationErrorEventHandler OnNotificationError;
+        /// <summary>
+        /// Register push notifications on demand
+        /// </summary>
+        /// <returns></returns>
+        Task RegisterForPushNotifications();
+        /// <summary>
+        /// Unregister push notifications on demand
+        /// </summary>
+        /// <returns></returns>
+        void UnregisterForPushNotifications();
         /// <summary>
         /// Push notification token
         /// </summary>
