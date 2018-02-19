@@ -11,7 +11,7 @@ using Android.Content;
 
 namespace PushNotificationSample.Droid
 {
-    [Activity(Label = "PushNotificationSample", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+    [Activity(Label = "PushNotificationSample", Icon = "@drawable/icon", Theme = "@style/MainTheme", ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle bundle)
@@ -23,12 +23,12 @@ namespace PushNotificationSample.Droid
 
             global::Xamarin.Forms.Forms.Init(this, bundle);
             LoadApplication(new App());
-            PushNotificationManager.ProcessIntent(Intent);
+            PushNotificationManager.ProcessIntent(this,Intent);
         }
         protected override void OnNewIntent(Intent intent)
         {
             base.OnNewIntent(intent);
-            PushNotificationManager.ProcessIntent(intent);
+            PushNotificationManager.ProcessIntent(this,intent);
         }
     }
 }

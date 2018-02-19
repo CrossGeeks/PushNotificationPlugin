@@ -370,9 +370,9 @@ namespace Plugin.PushNotification
                 {
                     if (userCat != null && userCat.Actions != null && userCat.Actions.Count > 0)
                     {
-                        var aRequestCode = Guid.NewGuid().GetHashCode();
                         foreach (var action in userCat.Actions)
                         {
+                            var aRequestCode = Guid.NewGuid().GetHashCode();
                             if (userCat.Category.Equals(category, StringComparison.CurrentCultureIgnoreCase))
                             {
                                 Intent actionIntent = null;

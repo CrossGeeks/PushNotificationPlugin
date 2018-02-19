@@ -41,7 +41,7 @@ namespace Plugin.PushNotification
 
         static Context _context;
 
-        [Obsolete("ProcessIntent is deprecated, please use the other override instead.")]
+        [Obsolete("ProcessIntent with these parameters is deprecated, please use the other override instead.")]
         public static void ProcessIntent(Intent intent, bool enableDelayedResponse = true)
         {
             Bundle extras = intent?.Extras;
