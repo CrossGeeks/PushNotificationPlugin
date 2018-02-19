@@ -55,10 +55,10 @@
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
     <Reference Include="Plugin.PushNotification, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Plugin.PushNotification.1.2.4\lib\MonoAndroid80\Plugin.PushNotification.dll</HintPath>
+      <HintPath>..\packages\Plugin.PushNotification.1.2.8-beta\lib\MonoAndroid80\Plugin.PushNotification.dll</HintPath>
     </Reference>
     <Reference Include="Plugin.PushNotification.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Plugin.PushNotification.1.2.4\lib\MonoAndroid80\Plugin.PushNotification.Abstractions.dll</HintPath>
+      <HintPath>..\packages\Plugin.PushNotification.1.2.8-beta\lib\MonoAndroid80\Plugin.PushNotification.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -149,6 +149,7 @@
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SplashActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <GoogleServicesJson Include="google-services.json" />
@@ -177,6 +178,12 @@
       <Project>{c3a7f98c-cb76-49c9-9016-a913a6a00453}</Project>
       <Name>PushNotificationSample</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\colors.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\splash_screen.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
