@@ -14,8 +14,8 @@ namespace Plugin.PushNotification
   /// </summary>
   public class PushNotificationManager : NSObject, IPushNotification, IUNUserNotificationCenterDelegate
   {
-        static string _token = string.Empty;
-        public string Token { get { return _token; } }
+        const string TokenKey = "Token";
+        public string Token { get { return NSUserDefaults.StandardUserDefaults.StringForKey(TokenKey) ?? string.Empty;} }
         public IPushNotificationHandler NotificationHandler { get; set; }
 
         public static UNNotificationPresentationOptions CurrentNotificationPresentationOption { get; set; } = UNNotificationPresentationOptions.None;
@@ -98,48 +98,11 @@ namespace Plugin.PushNotification
         {
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
 
-            TaskCompletionSource<bool> permisionTask = new TaskCompletionSource<bool>();
-
-            // Register your app for remote notifications.
-            if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
-            {
-                // iOS 10 or later
-                var authOptions = UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound;
-                UNUserNotificationCenter.Current.RequestAuthorization(authOptions, (granted, error) =>
-                {
-                    if (error != null)
-                        _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(error.Description));
-                    else
-                        System.Diagnostics.Debug.WriteLine(granted);
-
-                    permisionTask.SetResult(granted);
-                });
-
-                // For iOS 10 display notification (sent via APNS)
-                UNUserNotificationCenter.Current.Delegate = CrossPushNotification.Current as IUNUserNotificationCenterDelegate;
-
-            }
-            else
-            {
-                // iOS 9 or before
-                var allNotificationTypes = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
-                var settings = UIUserNotificationSettings.GetSettingsForTypes(allNotificationTypes, null);
-                UIApplication.SharedApplication.RegisterUserNotificationSettings(settings);
-                permisionTask.SetResult(true);
-            }
-
-            var permissonGranted = await permisionTask.Task;
-
-            if (!permissonGranted)
-            {
-                _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs("Push notification permission not granted"));
-
-            }
-
             if (autoRegistration)
             {
-                UIApplication.SharedApplication.RegisterForRemoteNotifications();
+                await CrossPushNotification.Current.RegisterForPushNotifications();
             }
+
         }
 
         public static async Task Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true)
@@ -213,13 +176,56 @@ namespace Plugin.PushNotification
             }
 
         }
-        public static void Register()
+        public async Task RegisterForPushNotifications()
         {
-            UIApplication.SharedApplication.RegisterForRemoteNotifications();
+            TaskCompletionSource<bool> permisionTask = new TaskCompletionSource<bool>();
+
+            // Register your app for remote notifications.
+            if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+            {
+                // iOS 10 or later
+                var authOptions = UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound;
+
+
+                // For iOS 10 display notification (sent via APNS)
+                UNUserNotificationCenter.Current.Delegate = CrossPushNotification.Current as IUNUserNotificationCenterDelegate;
+
+                UNUserNotificationCenter.Current.RequestAuthorization(authOptions, (granted, error) =>
+                {
+                    if (error != null)
+                           _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.PermissionDenied, error.Description));
+                    else if (!granted)
+                           _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs( PushNotificationErrorType.PermissionDenied,"Push notification permission not granted"));
+
+
+                    permisionTask.SetResult(granted);
+                });
+
+
+
+            }
+            else
+            {
+                // iOS 9 or before
+                var allNotificationTypes = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
+                var settings = UIUserNotificationSettings.GetSettingsForTypes(allNotificationTypes, null);
+                UIApplication.SharedApplication.RegisterUserNotificationSettings(settings);
+                permisionTask.SetResult(true);
+            }
+
+
+            var permissonGranted = await permisionTask.Task;
+
+            if (permissonGranted)
+            {
+                UIApplication.SharedApplication.RegisterForRemoteNotifications();
+            }
         }
-        public static void Unregister()
+
+        public void UnregisterForPushNotifications()
         {
             UIApplication.SharedApplication.UnregisterForRemoteNotifications();
+            NSUserDefaults.StandardUserDefaults.SetString(string.Empty, TokenKey);
         }
 
         // To receive notifications in foreground on iOS 10 devices.
@@ -266,7 +272,7 @@ namespace Plugin.PushNotification
                 trimmedDeviceToken = trimmedDeviceToken.Trim();
                 trimmedDeviceToken = trimmedDeviceToken.Replace(" ", "");
             }
-            _token = trimmedDeviceToken; 
+            NSUserDefaults.StandardUserDefaults.SetString(trimmedDeviceToken, TokenKey);
             _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(trimmedDeviceToken));
         }
 
@@ -282,7 +288,7 @@ namespace Plugin.PushNotification
 
         public static void RemoteNotificationRegistrationFailed(NSError error)
         {
-            _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(error.Description));
+            _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.RegistrationFailed,error.Description));
         }
 
         static IDictionary<string, object> GetParameters(NSDictionary data)

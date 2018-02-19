@@ -30,11 +30,8 @@ namespace Plugin.PushNotification
             }
 
          
-            CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
             PushNotificationManager.RegisterData(parameters);
             
-            
-
             NotificationManager manager = context.GetSystemService(Context.NotificationService) as NotificationManager;
             var notificationId = extras.GetInt(DefaultPushNotificationHandler.ActionNotificationIdKey, -1);
             if (notificationId != -1)
@@ -47,9 +44,7 @@ namespace Plugin.PushNotification
                     manager.Cancel(notificationTag, notificationId);
 
             }
-     
-            context.UnregisterReceiver(PushNotificationManager.ActionReceiver);
-            PushNotificationManager.ActionReceiver = null;
+
         }
     }
 }

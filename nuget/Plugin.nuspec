@@ -2,7 +2,7 @@
 <package >
   <metadata minClientVersion="2.8.1">
     <id>Plugin.PushNotification</id>
-    <version>1.2.5</version>
+    <version>1.2.7-beta</version>
     <title>Push Notification Plugin for Xamarin</title>
     <authors>Rendy Del Rosario</authors>
     <owners>crossgeeks</owners>
@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</description>
     <summary>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</summary>
-    <releaseNotes>Support for Android O and other minor fixes.</releaseNotes>
+    <releaseNotes>On demand registration, persistent token, better error handling and other minor fixes</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>iOS,Android,push notifications,pcl,xamarin,plugins,xam.pcl,fcm,apn</tags>
     <dependencies>
@@ -21,6 +21,7 @@
         </group>
         <group targetFramework="MonoAndroid80">
           <dependency id="Xamarin.Firebase.Messaging" version="[60.1142.0]" />
+          <dependency id="Xamarin.Android.Support.v4" version="26.0.2" />
         </group>
     </dependencies>
   </metadata>
