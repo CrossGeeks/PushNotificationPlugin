@@ -10,5 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CrossPushNotification.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ISecureStorage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SecureStorageImplementationBase.cs" />
   </ItemGroup>
 </Project>
