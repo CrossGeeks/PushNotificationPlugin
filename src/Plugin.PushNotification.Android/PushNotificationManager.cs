@@ -29,10 +29,22 @@ namespace Plugin.PushNotification
         internal const string AppVersionPackageNameKey = "AppVersionPackageNameKey";
         static IList<NotificationUserCategory> userNotificationCategories = new List<NotificationUserCategory>();
 
+        /// <summary>
+        /// Storage Password for anroid Keystore. Assign your own password, and obfuscate the app.
+        /// </summary>
         public static string StoragePassword
         {
             get => SecureStorageImplementation.StoragePassword;
             set => SecureStorageImplementation.StoragePassword = value;
+        }
+
+        /// <summary>
+        /// Name of the storage file.
+        /// </summary>
+        public static string StorageFile
+        {
+            get => SecureStorageImplementation.StorageFile;
+            set => SecureStorageImplementation.StorageFile = value;
         }
 
         public static string NotificationContentTitleKey { get; set; }
