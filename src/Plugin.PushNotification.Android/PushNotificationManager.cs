@@ -18,8 +18,13 @@ namespace Plugin.PushNotification
     /// </summary>
     public class PushNotificationManager : IPushNotification
     {
+        static PushNotificationManager()
+        {
+            SecureStorage = new SecureStorageImplementation();
+            UserNotificationCategories = new List<NotificationUserCategory>();
+        }
+
         //internal static PushNotificationActionReceiver ActionReceiver = null;
-        private static readonly ISecureStorage SecureStorage = new SecureStorageImplementation();
 
         static NotificationResponse delayedNotificationResponse = null;
         internal const string KeyGroupName = "Plugin.PushNotification";
@@ -27,7 +32,8 @@ namespace Plugin.PushNotification
         internal const string AppVersionCodeKey = "AppVersionCodeKey";
         internal const string AppVersionNameKey = "AppVersionNameKey";
         internal const string AppVersionPackageNameKey = "AppVersionPackageNameKey";
-        static IList<NotificationUserCategory> userNotificationCategories = new List<NotificationUserCategory>();
+        internal static readonly ISecureStorage SecureStorage;
+        private static readonly IList<NotificationUserCategory> UserNotificationCategories;
 
         /// <summary>
         /// Storage Password for anroid Keystore. Assign your own password, and obfuscate the app.
@@ -166,8 +172,6 @@ namespace Plugin.PushNotification
 
                     try
                     {
-
-
                         var storedVersionName =
                             SecureStorage.GetValue(PushNotificationManager.AppVersionNameKey, string.Empty);
                         var storedVersionCode =
@@ -175,7 +179,6 @@ namespace Plugin.PushNotification
                         var storedPackageName = SecureStorage.GetValue(
                             PushNotificationManager.AppVersionPackageNameKey,
                             string.Empty);
-
 
                         if (resetToken || (!string.IsNullOrEmpty(storedPackageName) &&
                                            (!storedPackageName.Equals(packageName,
@@ -276,7 +279,7 @@ namespace Plugin.PushNotification
 
         public static void ClearUserNotificationCategories()
         {
-            userNotificationCategories.Clear();
+            UserNotificationCategories.Clear();
         }
 
         public string Token => SecureStorage.GetValue(TokenKey, string.Empty);
@@ -337,7 +340,7 @@ namespace Plugin.PushNotification
 
         public NotificationUserCategory[] GetUserNotificationCategories()
         {
-            return userNotificationCategories?.ToArray();
+            return UserNotificationCategories?.ToArray();
         }
 
         public static void RegisterUserNotificationCategories(NotificationUserCategory[] notificationCategories)
@@ -348,7 +351,7 @@ namespace Plugin.PushNotification
 
                 foreach (var userCat in notificationCategories)
                 {
-                    userNotificationCategories.Add(userCat);
+                    UserNotificationCategories.Add(userCat);
                 }
             }
             else
