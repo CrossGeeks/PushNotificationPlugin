@@ -16,9 +16,14 @@ namespace Plugin.PushNotification
     /// </summary>
     public class PushNotificationManager : NSObject, IPushNotification, IUNUserNotificationCenterDelegate
     {
-        public static readonly ISecureStorage SecureStorage = new SecureStorageImplementation();
+        static PushNotificationManager()
+        {
+            SecureStorage = new SecureStorageImplementation();
+        }
+        
+        private static readonly ISecureStorage SecureStorage;
 
-        const string TokenKey = "Token";
+        private const string TokenKey = "Token";
 
         public string Token => SecureStorage.GetValue(TokenKey, string.Empty);
 

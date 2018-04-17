@@ -31,9 +31,10 @@ namespace Plugin.PushNotification
         private readonly char[] StoragePasswordArray;
 
         // Store for Key Value pairs
-        KeyStore _store;
+        private readonly KeyStore _store;
+
         // password protection for the store
-        KeyStore.PasswordProtection _passwordProtection;
+        private readonly KeyStore.PasswordProtection _passwordProtection;
 
         /// <summary>
         /// Default constructor created or loads the store
@@ -65,7 +66,6 @@ namespace Plugin.PushNotification
                 // this will happen for the first run. As no file is expected to be present
                 _store.Load(null, StoragePasswordArray);
             }
-
         }
 
         #region ISecureStorage implementation
@@ -179,8 +179,6 @@ namespace Plugin.PushNotification
             {
                 return null;
             }
-
-            return null;
         }
 
         /// <summary>
@@ -190,7 +188,7 @@ namespace Plugin.PushNotification
         {
             private const string AlgoName = "RAW";
 
-            private byte[] _bytes;
+            private readonly byte[] _bytes;
 
             /// <summary>
             /// Constructor makes sure that entry is valid.
@@ -213,20 +211,10 @@ namespace Plugin.PushNotification
                 return _bytes;
             }
 
-            public string Algorithm
-            {
-                get
-                {
-                    return AlgoName;
-                }
-            }
-            public string Format
-            {
-                get
-                {
-                    return AlgoName;
-                }
-            }
+            public string Algorithm => AlgoName;
+
+            public string Format => AlgoName;
+
             #endregion
         }
     }
