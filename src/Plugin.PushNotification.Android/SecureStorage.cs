@@ -159,13 +159,20 @@ namespace Plugin.PushNotification
 
         #endregion
 
+        private object _writeAccessLocker = new object();
+
         // persists the store using password
         private void Save()
         {
-            using (var stream = new IsolatedStorageFileStream(StorageFile, FileMode.OpenOrCreate, FileAccess.Write))
+            System.Diagnostics.Debug.WriteLine($"SAVE STARTED");
+            lock (_writeAccessLocker)
             {
-                _store.Store(stream, StoragePasswordArray);
+                using (var stream = new IsolatedStorageFileStream(StorageFile, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    _store.Store(stream, StoragePasswordArray);
+                }
             }
+            System.Diagnostics.Debug.WriteLine($"SAVE ENDED");
         }
 
         // retrieves the secret key entry from the store
@@ -176,7 +183,7 @@ namespace Plugin.PushNotification
                 return _store.GetEntry(key, _passwordProtection) as KeyStore.SecretKeyEntry;
             }
             catch (UnrecoverableKeyException) // swallow this exception. Can be caused by invalid key
-            {
+            { 
                 return null;
             }
         }

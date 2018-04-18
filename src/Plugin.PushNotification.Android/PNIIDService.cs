@@ -17,7 +17,8 @@ namespace Plugin.PushNotification
             // Get updated InstanceID token.
             var refreshedToken = FirebaseInstanceId.Instance.Token;
 
-            PushNotificationManager.SecureStorage.SetValue(PushNotificationManager.TokenKey, refreshedToken);
+            if (!string.IsNullOrEmpty(refreshedToken))
+                PushNotificationManager.SecureStorage.SetValue(PushNotificationManager.TokenKey, refreshedToken);
 
             // CrossPushNotification.Current.OnTokenRefresh?.Invoke(this,refreshedToken);
             PushNotificationManager.RegisterToken(refreshedToken);
