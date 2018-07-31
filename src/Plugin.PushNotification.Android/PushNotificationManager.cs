@@ -8,8 +8,10 @@ using System.Linq;
 using System.Threading;
 using Android.Content.PM;
 using Android.Graphics;
+using Android.Util;
 using Firebase.Iid;
 using Plugin.PushNotification.Shared;
+using Encoding = System.Text.Encoding;
 
 namespace Plugin.PushNotification
 {
@@ -18,40 +20,17 @@ namespace Plugin.PushNotification
     /// </summary>
     public class PushNotificationManager : IPushNotification
     {
-        static PushNotificationManager()
-        {
-            SecureStorage = new SecureStorageImplementation();
-            UserNotificationCategories = new List<NotificationUserCategory>();
-        }
-
         //internal static PushNotificationActionReceiver ActionReceiver = null;
 
         static NotificationResponse delayedNotificationResponse = null;
-        internal const string KeyGroupName = "Plugin.PushNotification";
-        internal const string TokenKey = "TokenKey";
-        internal const string AppVersionCodeKey = "AppVersionCodeKey";
-        internal const string AppVersionNameKey = "AppVersionNameKey";
-        internal const string AppVersionPackageNameKey = "AppVersionPackageNameKey";
-        internal static readonly ISecureStorage SecureStorage;
-        private static readonly IList<NotificationUserCategory> UserNotificationCategories;
+        internal static string KeyGroupName = "KJt2CTan" + Crypto.Reverse("DG7ZbRpYvS0M");
+        internal static string TokenKey = "w3IJux7Rx" + Crypto.Reverse("uwWkjGqWnXW");
+        internal static string AppVersionCodeKey = Crypto.Reverse("ITs84ZItL7") + "d6y5gqx6vA";
+        internal static string AppVersionNameKey = "5zA3VnV6" + Crypto.Reverse("uTdUjLl164o2");
+        internal static string AppVersionPackageNameKey = Crypto.Reverse("9JMCgtya") + "IFQDXZqF00Ty";
 
-        /// <summary>
-        /// Storage Password for anroid Keystore. Assign your own password, and obfuscate the app.
-        /// </summary>
-        public static string StoragePassword
-        {
-            get => SecureStorageImplementation.StoragePassword;
-            set => SecureStorageImplementation.StoragePassword = value;
-        }
-
-        /// <summary>
-        /// Name of the storage file.
-        /// </summary>
-        public static string StorageFile
-        {
-            get => SecureStorageImplementation.StorageFile;
-            set => SecureStorageImplementation.StorageFile = value;
-        }
+        private static readonly IList<NotificationUserCategory> UserNotificationCategories =
+            new List<NotificationUserCategory>();
 
         public static string NotificationContentTitleKey { get; set; }
         public static string NotificationContentTextKey { get; set; }
@@ -170,15 +149,21 @@ namespace Plugin.PushNotification
                     var versionName = Application.Context.PackageManager
                         .GetPackageInfo(Application.Context.PackageName, PackageInfoFlags.MetaData).VersionName;
 
+                    var prefs = Android.App.Application.Context.GetSharedPreferences(
+                        PushNotificationManager.KeyGroupName, FileCreationMode.Private);
+
                     try
                     {
                         var storedVersionName =
-                            SecureStorage.GetValue(PushNotificationManager.AppVersionNameKey, string.Empty);
+                            Crypto.Decrypt(prefs.GetString(PushNotificationManager.AppVersionNameKey, string.Empty),
+                                RestSecurity);
                         var storedVersionCode =
-                            SecureStorage.GetValue(PushNotificationManager.AppVersionCodeKey, string.Empty);
-                        var storedPackageName = SecureStorage.GetValue(
-                            PushNotificationManager.AppVersionPackageNameKey,
-                            string.Empty);
+                            Crypto.Decrypt(prefs.GetString(PushNotificationManager.AppVersionCodeKey, string.Empty),
+                                RestSecurity);
+                        var storedPackageName =
+                            Crypto.Decrypt(
+                                prefs.GetString(PushNotificationManager.AppVersionPackageNameKey, string.Empty),
+                                RestSecurity);
 
                         if (resetToken || (!string.IsNullOrEmpty(storedPackageName) &&
                                            (!storedPackageName.Equals(packageName,
@@ -199,9 +184,14 @@ namespace Plugin.PushNotification
                     }
                     finally
                     {
-                        SecureStorage.SetValue(PushNotificationManager.AppVersionNameKey, $"{versionName}");
-                        SecureStorage.SetValue(PushNotificationManager.AppVersionCodeKey, $"{versionName}");
-                        SecureStorage.SetValue(PushNotificationManager.AppVersionPackageNameKey, $"{versionName}");
+                        var editor = prefs.Edit();
+                        editor.PutString(PushNotificationManager.AppVersionNameKey,
+                            Crypto.Encrypt($"{versionName}", RestSecurity));
+                        editor.PutString(PushNotificationManager.AppVersionCodeKey,
+                            Crypto.Encrypt($"{versionCode}", RestSecurity));
+                        editor.PutString(PushNotificationManager.AppVersionPackageNameKey,
+                            Crypto.Encrypt($"{packageName}", RestSecurity));
+                        editor.Commit();
                     }
 
 
@@ -282,7 +272,10 @@ namespace Plugin.PushNotification
             UserNotificationCategories.Clear();
         }
 
-        public string Token => SecureStorage.GetValue(TokenKey, string.Empty);
+        public string Token =>
+            Crypto.Decrypt(
+                Android.App.Application.Context.GetSharedPreferences(KeyGroupName, FileCreationMode.Private)
+                    .GetString(TokenKey, string.Empty), TokenSecurity);
 
         static PushNotificationDataEventHandler _onNotificationReceived;
 
@@ -365,6 +358,11 @@ namespace Plugin.PushNotification
         //Raises event for push notification token refresh
         internal static void RegisterToken(string token)
         {
+            if (!string.IsNullOrEmpty(token))
+            {
+                SaveToken(token);
+            }
+
             _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(token));
         }
 
@@ -380,8 +378,19 @@ namespace Plugin.PushNotification
 
         internal static void SaveToken(string token)
         {
-            SecureStorage.SetValue(PushNotificationManager.TokenKey, token);
+            var editor = Application.Context
+                .GetSharedPreferences(PushNotificationManager.KeyGroupName, FileCreationMode.Private).Edit();
+            editor.PutString(PushNotificationManager.TokenKey, Crypto.Encrypt(token, TokenSecurity));
+            editor.Commit();
         }
+
+        private static readonly string TokenSecurity =
+            Crypto.Reverse("G8V0Qzj") + "G8V0QzjP" + Crypto.Reverse("xs8tjmVhVGoP") +
+            "4iM16g8hUQ1" + Crypto.Reverse("XzlSv3FAF");
+
+        private static readonly string RestSecurity =
+            Crypto.Reverse("eoxJs0LVi") + "GMz1sKMDZ03" + Crypto.Reverse("tgjded") +
+            "Q3kHrd6" + Crypto.Reverse("GMdT6q6");
 
         #endregion
     }

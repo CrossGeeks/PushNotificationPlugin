@@ -2,7 +2,7 @@
 <package >
   <metadata minClientVersion="2.8.1">
     <id>Plugin.PushNotification-updated</id>
-    <version>1.3.4-beta1</version>
+    <version>1.3.4-beta2</version>
     <title>Push Notification Plugin for Xamarin (Updated)</title>
     <authors>Rendy Del Rosario, Sameer Khandekar, Vikram Mahendrakar</authors>
     <owners>crossgeeks</owners>

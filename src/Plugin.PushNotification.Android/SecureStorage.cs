@@ -1,8 +1,4 @@
-﻿////////////////////////////////////////////////////////
-// Copyright (c) 2017 Sameer Khandekar                //
-// License: MIT License.                              //
-////////////////////////////////////////////////////////
-using System;
+﻿using System;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Text;
@@ -18,6 +14,9 @@ namespace Plugin.PushNotification
     /// </summary>
     internal class SecureStorageImplementation : SecureStorageImplementationBase
     {
+        private static IsolatedStorageFile File => IsolatedStorageFile.GetUserStoreForApplication();
+        private static readonly object SaveLock = new object();
+
         /// <summary>
         /// Name of the storage file.
         /// </summary>
@@ -28,13 +27,13 @@ namespace Plugin.PushNotification
         /// </summary>
         public static string StoragePassword = "Replace With Your Password";
 
-        private readonly char[] StoragePasswordArray;
+        private readonly char[] _password;
 
         // Store for Key Value pairs
-        private readonly KeyStore _store;
+        private readonly KeyStore _keyStore;
 
         // password protection for the store
-        private readonly KeyStore.PasswordProtection _passwordProtection;
+        private readonly KeyStore.PasswordProtection _protection;
 
         /// <summary>
         /// Default constructor created or loads the store
@@ -47,24 +46,21 @@ namespace Plugin.PushNotification
                 throw new Exception($"Must set StoragePassword");
             }
 
-            StoragePasswordArray = StoragePassword.ToCharArray();
+            this._password = StoragePassword.ToCharArray();
 
-            // Instantiate store and protection
-            _store = KeyStore.GetInstance(KeyStore.DefaultType);
-            _passwordProtection = new KeyStore.PasswordProtection(StoragePasswordArray);
+            _keyStore = KeyStore.GetInstance(KeyStore.DefaultType);
+            _protection = new KeyStore.PasswordProtection(this._password);
 
-            // if store exists, load it from the file
-            try
+            if (File.FileExists(StorageFile))
             {
-                using (var stream = new IsolatedStorageFileStream(StorageFile, FileMode.Open, FileAccess.Read))
+                using (var stream = new IsolatedStorageFileStream(StorageFile, FileMode.Open, FileAccess.Read, File))
                 {
-                    _store.Load(stream, StoragePasswordArray);
+                    this._keyStore.Load(stream, _password);
                 }
             }
-            catch (Exception)
+            else
             {
-                // this will happen for the first run. As no file is expected to be present
-                _store.Load(null, StoragePasswordArray);
+                this._keyStore.Load(null, _password);
             }
         }
 
@@ -85,7 +81,7 @@ namespace Plugin.PushNotification
 
             // get the entry from the store
             // if it does not exist, return the default value
-            KeyStore.SecretKeyEntry entry = GetSecretKeyEntry(key);
+            var entry = GetSecretKeyEntry(key);
 
             if (entry != null)
             {
@@ -107,18 +103,9 @@ namespace Plugin.PushNotification
         /// <param name="value">Value.</param>
         public override bool SetValue(string key, string value)
         {
-            // validate the parameters
             base.SetValue(key, value);
-
-            // create entry
-            var secKeyEntry = new KeyStore.SecretKeyEntry(new StringKeyEntry(value));
-
-            // save it in the KeyStore
-            _store.SetEntry(key, secKeyEntry, _passwordProtection);
-
-            // save the store
+            this._keyStore.SetEntry(key, new KeyStore.SecretKeyEntry(new SecureData(value)), _protection);
             Save();
-
             return true;
         }
 
@@ -136,10 +123,8 @@ namespace Plugin.PushNotification
             // if entry exists, delete from store, save the store and return true
             if (entry != null)
             {
-                _store.DeleteEntry(key);
-
+                _keyStore.DeleteEntry(key);
                 Save();
-
                 return true;
             }
 
@@ -159,20 +144,16 @@ namespace Plugin.PushNotification
 
         #endregion
 
-        private object _writeAccessLocker = new object();
-
         // persists the store using password
         private void Save()
         {
-            System.Diagnostics.Debug.WriteLine($"SAVE STARTED");
-            lock (_writeAccessLocker)
+            lock (SaveLock)
             {
-                using (var stream = new IsolatedStorageFileStream(StorageFile, FileMode.OpenOrCreate, FileAccess.Write))
+                using (var stream = new IsolatedStorageFileStream(StorageFile, FileMode.OpenOrCreate, FileAccess.Write, File))
                 {
-                    _store.Store(stream, StoragePasswordArray);
+                    this._keyStore.Store(stream, this._protection.GetPassword());
                 }
             }
-            System.Diagnostics.Debug.WriteLine($"SAVE ENDED");
         }
 
         // retrieves the secret key entry from the store
@@ -180,7 +161,7 @@ namespace Plugin.PushNotification
         {
             try
             {
-                return _store.GetEntry(key, _passwordProtection) as KeyStore.SecretKeyEntry;
+                return _keyStore.GetEntry(key, _protection) as KeyStore.SecretKeyEntry;
             }
             catch (UnrecoverableKeyException) // swallow this exception. Can be caused by invalid key
             { 
@@ -191,7 +172,7 @@ namespace Plugin.PushNotification
         /// <summary>
         /// Class for storing string as entry
         /// </summary>
-        private class StringKeyEntry : Java.Lang.Object, ISecretKey
+        private class SecureData : Java.Lang.Object, ISecretKey
         {
             private const string AlgoName = "RAW";
 
@@ -202,7 +183,7 @@ namespace Plugin.PushNotification
             /// Converts it to bytes
             /// </summary>
             /// <param name="entry">Entry.</param>
-            public StringKeyEntry(string entry)
+            public SecureData(string entry)
             {
                 if (entry == null)
                 {
