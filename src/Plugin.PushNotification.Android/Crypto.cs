@@ -9,7 +9,7 @@ namespace Plugin.PushNotification
     internal static class Crypto
     {
         // Define the secret salt value for encrypting data
-        private static readonly byte[] Salt = Encoding.ASCII.GetBytes(Reverse("qx6vA") + "x7RxuwWkjGq" + Reverse("9JMCgty") + ": 7.0.6.168");
+        private static readonly byte[] Salt = Encoding.ASCII.GetBytes("0");
 
         /// <summary>
         /// Takes the given text string and encrypts it using the given password.
