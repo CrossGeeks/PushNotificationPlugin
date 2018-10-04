@@ -1,4 +1,5 @@
 ﻿using Android.App;
+using Android.Content;
 using Firebase.Iid;
 
 namespace Plugin.PushNotification
@@ -17,7 +18,8 @@ namespace Plugin.PushNotification
             // Get updated InstanceID token.
             var refreshedToken = FirebaseInstanceId.Instance.Token;
 
-            PushNotificationManager.SecureStorage.SetValue(PushNotificationManager.TokenKey, refreshedToken);
+            if (!string.IsNullOrEmpty(refreshedToken))
+                PushNotificationManager.SaveToken(refreshedToken);
 
             // CrossPushNotification.Current.OnTokenRefresh?.Invoke(this,refreshedToken);
             PushNotificationManager.RegisterToken(refreshedToken);
