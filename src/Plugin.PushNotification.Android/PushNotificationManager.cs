@@ -384,13 +384,9 @@ namespace Plugin.PushNotification
             editor.Commit();
         }
 
-        private static readonly string TokenSecurity =
-            Crypto.Reverse("G8V0Qzj") + "G8V0QzjP" + Crypto.Reverse("xs8tjmVhVGoP") +
-            "4iM16g8hUQ1" + Crypto.Reverse("XzlSv3FAF");
+        private static readonly string TokenSecurity ="";
 
-        private static readonly string RestSecurity =
-            Crypto.Reverse("eoxJs0LVi") + "GMz1sKMDZ03" + Crypto.Reverse("tgjded") +
-            "Q3kHrd6" + Crypto.Reverse("GMdT6q6");
+        private static readonly string RestSecurity = "";
 
         #endregion
     }
