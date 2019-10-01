@@ -93,6 +93,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Crypto.cs" />
     <Compile Include="DefaultPushNotificationHandler.cs" />
     <Compile Include="PNIIDService.cs" />
     <Compile Include="PNMessagingService.cs" />

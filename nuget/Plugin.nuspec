@@ -1,34 +1,47 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 <package >
   <metadata minClientVersion="2.8.1">
-    <id>Post.Mobile.Plugin.PushNotification</id>
-    <version>1.3.1</version>
-    <title>Push Notification Plugin for Xamarin</title>
-    <authors>Rendy Del Rosario</authors>
+    <id>Plugin.PushNotification-updated</id>
+    <version>1.3.4-beta3</version>
+    <title>Push Notification Plugin for Xamarin (Updated)</title>
+    <authors>Rendy Del Rosario, Sameer Khandekar, Vikram Mahendrakar</authors>
     <owners>crossgeeks</owners>
-    <licenseUrl>https://raw.githubusercontent.com/CrossGeeks/PushNotificationPlugin/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/CrossGeeks/PushNotificationPlugin</projectUrl>
+    <licenseUrl>https://github.com/vikram-ma/PushNotificationPlugin/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/vikram-ma/PushNotificationPlugin</projectUrl>
     <iconUrl>https://github.com/CrossGeeks/PushNotificationPlugin/blob/master/art/icon.png?raw=true</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</description>
-    <summary>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</summary>
-    <releaseNotes>On demand registration, persistent token, better error handling and other minor fixes</releaseNotes>
+    <summary>Receive and handle push notificat  ions across Xamarin.iOS and Xamarin.Android</summary>
+    <releaseNotes>
+      On demand registration, persistent token, better error handling and other minor fixes
+      1.3.1
+      [Update] Modified plugin to save token securely using Secure Storage originally written by Sameer Khandekar.
+      [Update] Secure Storoage -> https://github.com/vikram-ma/SecureStorage
+      1.3.2
+      [Update] Updated documentation. Added option to change storage file.
+      1.3.4-beta1
+      [Update] Fixed Android PNIIDService to use secure storage.
+      [Update] Made Saving of information to KeyStore thread safe.
+      1.3.4-beta3
+      [Update] Bumped up Xamarin.Firebase.Messaging to >= 60.1142.0
+    </releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>iOS,Android,push notifications,pcl,xamarin,plugins,xam.pcl,fcm,apn</tags>
     <dependencies>
-      <group targetFramework="netstandard1.0">
-        <dependency id="NETStandard.Library" version="1.6.1" />
-      </group>
-      <group targetFramework="MonoAndroid81">
-        <dependency id="Xamarin.Firebase.Messaging" version="[60.1142.1]" />
-        <dependency id="Xamarin.Android.Support.v4" version="28.0.0" />
-      </group>
+        <group targetFramework="netstandard1.0">
+          <dependency id="NETStandard.Library" version="1.6.1" />
+        </group>
+        <group targetFramework="MonoAndroid80">
+          <dependency id="Xamarin.Firebase.Messaging" version="60.1142.0" />
+          <dependency id="Xamarin.Android.Support.v4" version="26.0.2" />
+        </group>
     </dependencies>
   </metadata>
   <files>
-    <!--NetStandard/PCL-->
-    <file src="..\src\Plugin.PushNotification\bin\Release\netstandard1.0\Plugin.PushNotification.*" target="lib\netstandard1.0" />
-    <file src="..\src\Plugin.PushNotification.Android\bin\Release\Plugin.PushNotification.*" target="lib\MonoAndroid81" />
-    <file src="..\src\Plugin.PushNotification.iOS\bin\iPhone\Release\Plugin.PushNotification.*" target="lib\Xamarin.iOS10" />
+        <!--NetStandard/PCL-->
+        <file src="..\src\Plugin.PushNotification\bin\Release\netstandard1.0\Plugin.PushNotification.*" target="lib\netstandard1.0" />
+        <file src="..\src\Plugin.PushNotification.Android\bin\Release\Plugin.PushNotification.*" target="lib\MonoAndroid80" />
+        <file src="..\src\Plugin.PushNotification.iOS\bin\iPhone\Release\Plugin.PushNotification.*" target="lib\Xamarin.iOS10" />
   </files>
 </package>
+
