@@ -1,8 +1,8 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <package >
   <metadata minClientVersion="2.8.1">
-    <id>Plugin.PushNotification</id>
-    <version>1.3.0</version>
+    <id>Post.Mobile.Plugin.PushNotification</id>
+    <version>1.3.1</version>
     <title>Push Notification Plugin for Xamarin</title>
     <authors>Rendy Del Rosario</authors>
     <owners>crossgeeks</owners>
@@ -16,20 +16,19 @@
     <copyright>Copyright 2017</copyright>
     <tags>iOS,Android,push notifications,pcl,xamarin,plugins,xam.pcl,fcm,apn</tags>
     <dependencies>
-        <group targetFramework="netstandard1.0">
-          <dependency id="NETStandard.Library" version="1.6.1" />
-        </group>
-        <group targetFramework="MonoAndroid80">
-          <dependency id="Xamarin.Firebase.Messaging" version="[60.1142.0]" />
-          <dependency id="Xamarin.Android.Support.v4" version="26.0.2" />
-        </group>
+      <group targetFramework="netstandard1.0">
+        <dependency id="NETStandard.Library" version="1.6.1" />
+      </group>
+      <group targetFramework="MonoAndroid81">
+        <dependency id="Xamarin.Firebase.Messaging" version="[60.1142.1]" />
+        <dependency id="Xamarin.Android.Support.v4" version="28.0.0" />
+      </group>
     </dependencies>
   </metadata>
   <files>
-        <!--NetStandard/PCL-->
-        <file src="..\src\Plugin.PushNotification\bin\Release\netstandard1.0\Plugin.PushNotification.*" target="lib\netstandard1.0" />
-        <file src="..\src\Plugin.PushNotification.Android\bin\Release\Plugin.PushNotification.*" target="lib\MonoAndroid80" />
-        <file src="..\src\Plugin.PushNotification.iOS\bin\iPhone\Release\Plugin.PushNotification.*" target="lib\Xamarin.iOS10" />
+    <!--NetStandard/PCL-->
+    <file src="..\src\Plugin.PushNotification\bin\Release\netstandard1.0\Plugin.PushNotification.*" target="lib\netstandard1.0" />
+    <file src="..\src\Plugin.PushNotification.Android\bin\Release\Plugin.PushNotification.*" target="lib\MonoAndroid81" />
+    <file src="..\src\Plugin.PushNotification.iOS\bin\iPhone\Release\Plugin.PushNotification.*" target="lib\Xamarin.iOS10" />
   </files>
 </package>
-
