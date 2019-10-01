@@ -1,9 +1,10 @@
-using Foundation;
-using Plugin.PushNotification.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Foundation;
+using Plugin.PushNotification.Abstractions;
 using Plugin.PushNotification.Shared;
 using Plugin.SecureStorage;
 using UIKit;
@@ -20,7 +21,7 @@ namespace Plugin.PushNotification
         {
             SecureStorage = new SecureStorageImplementation();
         }
-        
+
         private static readonly ISecureStorage SecureStorage;
 
         private const string TokenKey = "Token";
@@ -264,19 +265,21 @@ namespace Plugin.PushNotification
 
         public static void DidRegisterRemoteNotifications(NSData deviceToken)
         {
-            string trimmedDeviceToken = deviceToken.Description;
-            if (!string.IsNullOrWhiteSpace(trimmedDeviceToken))
+            var length = (int)deviceToken.Length;
+            if (length == 0)
             {
-                trimmedDeviceToken = trimmedDeviceToken.Trim('<');
-                trimmedDeviceToken = trimmedDeviceToken.Trim('>');
-                trimmedDeviceToken = trimmedDeviceToken.Trim();
-                trimmedDeviceToken = trimmedDeviceToken.Replace(" ", "");
+                return;
             }
 
-            SecureStorage.SetValue(TokenKey, trimmedDeviceToken);
+            var hex = new StringBuilder(length * 2);
+            foreach (var b in deviceToken)
+            {
+                hex.AppendFormat("{0:x2}", b);
+            }
+            var cleanedDeviceToken = hex.ToString();
 
-            _onTokenRefresh?.Invoke(CrossPushNotification.Current,
-                new PushNotificationTokenEventArgs(trimmedDeviceToken));
+            SecureStorage.SetValue(TokenKey, cleanedDeviceToken);
+            _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(cleanedDeviceToken));
         }
 
         public static void DidReceiveMessage(NSDictionary data)
