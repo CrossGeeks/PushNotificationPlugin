@@ -43,6 +43,11 @@ There are 3 overrides to **PushNotificationManager.Initialize**:
 
 - **PushNotificationManager.Initialize(Context context,IPushNotificationHandler pushHandler, bool resetToken,bool createDefaultNotificationChannel, bool autoRegistration)** : Initializes the plugin using a custom push notification handler to provide custom ui and behaviour notifications receipt and opening.
 
+** Change KeyStore settings **
+- Change default KeyStore password by setting **PushNotificationManager.StoragePassword = "random, obfuscated password/app";**
+- Change default storage file by setting **PushNotificationManager.StorageFile = "storage file";**
+
+
 **Important: While debugging set resetToken parameter to true.**
 
 Example of initialization:
