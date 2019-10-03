@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Foundation;
 using Plugin.PushNotification.Abstractions;
-using Plugin.PushNotification.Shared;
-using Plugin.SecureStorage;
 using UIKit;
 using UserNotifications;
 
@@ -17,75 +15,112 @@ namespace Plugin.PushNotification
     /// </summary>
     public class PushNotificationManager : NSObject, IPushNotification, IUNUserNotificationCenterDelegate
     {
-        static PushNotificationManager()
+        const string TokenKey = "Token";
+
+        public Func<string> RetrieveSavedToken { get; set; } = InternalRetrieveSavedToken;
+        public Action<string> SaveToken { get; set; } = InternalSaveToken;
+
+        public string Token
         {
-            SecureStorage = new SecureStorageImplementation();
+            get
+            {
+                return RetrieveSavedToken?.Invoke() ?? string.Empty;
+            }
+            internal set
+            {
+                SaveToken?.Invoke(value);
+            }
         }
 
-        private static readonly ISecureStorage SecureStorage;
+        internal static string InternalRetrieveSavedToken()
+        {
+            return NSUserDefaults.StandardUserDefaults.StringForKey(TokenKey);
+        }
 
-        private const string TokenKey = "Token";
-
-        public string Token => SecureStorage.GetValue(TokenKey, string.Empty);
+        internal static void InternalSaveToken(string token)
+        {
+            NSUserDefaults.StandardUserDefaults.SetString(token, TokenKey);
+        }
 
         public IPushNotificationHandler NotificationHandler { get; set; }
 
-        public static UNNotificationPresentationOptions CurrentNotificationPresentationOption { get; set; } =
-            UNNotificationPresentationOptions.None;
+        public static UNNotificationPresentationOptions CurrentNotificationPresentationOption { get; set; } = UNNotificationPresentationOptions.None;
 
-        static readonly IList<NotificationUserCategory> usernNotificationCategories = new List<NotificationUserCategory>();
+        static IList<NotificationUserCategory> UsernNotificationCategories { get; } = new List<NotificationUserCategory>();
 
         static PushNotificationTokenEventHandler _onTokenRefresh;
-
         public event PushNotificationTokenEventHandler OnTokenRefresh
         {
-            add { _onTokenRefresh += value; }
-            remove { _onTokenRefresh -= value; }
+            add
+            {
+                _onTokenRefresh += value;
+            }
+            remove
+            {
+                _onTokenRefresh -= value;
+            }
         }
 
         static PushNotificationErrorEventHandler _onNotificationError;
-
         public event PushNotificationErrorEventHandler OnNotificationError
         {
-            add { _onNotificationError += value; }
-            remove { _onNotificationError -= value; }
+            add
+            {
+                _onNotificationError += value;
+            }
+            remove
+            {
+                _onNotificationError -= value;
+            }
         }
 
         static PushNotificationResponseEventHandler _onNotificationOpened;
-
         public event PushNotificationResponseEventHandler OnNotificationOpened
         {
-            add { _onNotificationOpened += value; }
-            remove { _onNotificationOpened -= value; }
+            add
+            {
+                _onNotificationOpened += value;
+            }
+            remove
+            {
+                _onNotificationOpened -= value;
+            }
         }
-
 
         public NotificationUserCategory[] GetUserNotificationCategories()
         {
-            return usernNotificationCategories?.ToArray();
+            return UsernNotificationCategories?.ToArray();
         }
 
-
         static PushNotificationDataEventHandler _onNotificationReceived;
-
         public event PushNotificationDataEventHandler OnNotificationReceived
         {
-            add { _onNotificationReceived += value; }
-            remove { _onNotificationReceived -= value; }
+            add
+            {
+                _onNotificationReceived += value;
+            }
+            remove
+            {
+                _onNotificationReceived -= value;
+            }
         }
 
         static PushNotificationDataEventHandler _onNotificationDeleted;
-
         public event PushNotificationDataEventHandler OnNotificationDeleted
         {
-            add { _onNotificationDeleted += value; }
-            remove { _onNotificationDeleted -= value; }
+            add
+            {
+                _onNotificationDeleted += value;
+            }
+            remove
+            {
+                _onNotificationDeleted -= value;
+            }
         }
 
         public static async Task Initialize(NSDictionary options, bool autoRegistration = true)
         {
-            CrossPushNotification.Current.NotificationHandler =
-                CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
+            CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
 
             if (autoRegistration)
             {
@@ -93,15 +128,13 @@ namespace Plugin.PushNotification
             }
         }
 
-        public static async Task Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler,
-            bool autoRegistration = true)
+        public static async Task Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true)
         {
             CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
             await Initialize(options, autoRegistration);
         }
 
-        public static async Task Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories,
-            bool autoRegistration = true)
+        public static async Task Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true)
         {
             await Initialize(options, autoRegistration);
             RegisterUserNotificationCategories(notificationUserCategories);
@@ -111,7 +144,7 @@ namespace Plugin.PushNotification
         {
             if (userCategories != null && userCategories.Length > 0)
             {
-                usernNotificationCategories.Clear();
+                UsernNotificationCategories.Clear();
                 IList<UNNotificationCategory> categories = new List<UNNotificationCategory>();
                 foreach (var userCat in userCategories)
                 {
@@ -136,10 +169,7 @@ namespace Plugin.PushNotification
                                 break;
                         }
 
-
-                        var notificationAction =
-                            UNNotificationAction.FromIdentifier(actionID, title, notificationActionType);
-
+                        var notificationAction = UNNotificationAction.FromIdentifier(actionID, title, notificationActionType);
                         actions.Add(notificationAction);
                     }
 
@@ -149,66 +179,53 @@ namespace Plugin.PushNotification
                     var intentIDs = new string[] { };
                     var categoryOptions = new UNNotificationCategoryOptions[] { };
 
-                    var category = UNNotificationCategory.FromIdentifier(categoryID, notificationActions, intentIDs,
-                        userCat.Type == NotificationCategoryType.Dismiss
-                            ? UNNotificationCategoryOptions.CustomDismissAction
-                            : UNNotificationCategoryOptions.None);
-
+                    var category = UNNotificationCategory.FromIdentifier(categoryID, notificationActions, intentIDs, userCat.Type == NotificationCategoryType.Dismiss ? UNNotificationCategoryOptions.CustomDismissAction : UNNotificationCategoryOptions.None);
                     categories.Add(category);
 
-                    usernNotificationCategories.Add(userCat);
+                    UsernNotificationCategories.Add(userCat);
                 }
 
                 // Register categories
-                UNUserNotificationCenter.Current.SetNotificationCategories(
-                    new NSSet<UNNotificationCategory>(categories.ToArray()));
+                UNUserNotificationCenter.Current.SetNotificationCategories(new NSSet<UNNotificationCategory>(categories.ToArray()));
             }
         }
 
         public async Task RegisterForPushNotifications()
         {
-            TaskCompletionSource<bool> permisionTask = new TaskCompletionSource<bool>();
+            var permisionTask = new TaskCompletionSource<bool>();
 
             // Register your app for remote notifications.
             if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
             {
                 // iOS 10 or later
-                var authOptions = UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge |
-                                  UNAuthorizationOptions.Sound;
-
+                var authOptions = UNAuthorizationOptions.Alert | UNAuthorizationOptions.Badge | UNAuthorizationOptions.Sound;
 
                 // For iOS 10 display notification (sent via APNS)
-                UNUserNotificationCenter.Current.Delegate =
-                    CrossPushNotification.Current as IUNUserNotificationCenterDelegate;
+                UNUserNotificationCenter.Current.Delegate = CrossPushNotification.Current as IUNUserNotificationCenterDelegate;
 
                 UNUserNotificationCenter.Current.RequestAuthorization(authOptions, (granted, error) =>
                 {
                     if (error != null)
-                        _onNotificationError?.Invoke(CrossPushNotification.Current,
-                            new PushNotificationErrorEventArgs(PushNotificationErrorType.PermissionDenied,
-                                error.Description));
+                    {
+                        _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.PermissionDenied, error.Description));
+                    }
                     else if (!granted)
-                        _onNotificationError?.Invoke(CrossPushNotification.Current,
-                            new PushNotificationErrorEventArgs(PushNotificationErrorType.PermissionDenied,
-                                "Push notification permission not granted"));
-
-
+                    {
+                        _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.PermissionDenied, "Push notification permission not granted"));
+                    }
                     permisionTask.SetResult(granted);
                 });
             }
             else
             {
                 // iOS 9 or before
-                var allNotificationTypes = UIUserNotificationType.Alert | UIUserNotificationType.Badge |
-                                           UIUserNotificationType.Sound;
+                var allNotificationTypes = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
                 var settings = UIUserNotificationSettings.GetSettingsForTypes(allNotificationTypes, null);
                 UIApplication.SharedApplication.RegisterUserNotificationSettings(settings);
                 permisionTask.SetResult(true);
             }
 
-
             var permissonGranted = await permisionTask.Task;
-
             if (permissonGranted)
             {
                 UIApplication.SharedApplication.RegisterForRemoteNotifications();
@@ -218,27 +235,24 @@ namespace Plugin.PushNotification
         public void UnregisterForPushNotifications()
         {
             UIApplication.SharedApplication.UnregisterForRemoteNotifications();
-            SecureStorage.DeleteKey(TokenKey);
+            Token = string.Empty;
         }
 
         // To receive notifications in foreground on iOS 10 devices.
         [Export("userNotificationCenter:willPresentNotification:withCompletionHandler:")]
-        public void WillPresentNotification(UNUserNotificationCenter center, UNNotification notification,
-            Action<UNNotificationPresentationOptions> completionHandler)
+        public void WillPresentNotification(UNUserNotificationCenter center, UNNotification notification, Action<UNNotificationPresentationOptions> completionHandler)
         {
             // Do your magic to handle the notification data
             System.Console.WriteLine(notification.Request.Content.UserInfo);
             System.Diagnostics.Debug.WriteLine("WillPresentNotification");
             var parameters = GetParameters(notification.Request.Content.UserInfo);
-            _onNotificationReceived?.Invoke(CrossPushNotification.Current,
-                new PushNotificationDataEventArgs(parameters));
+            _onNotificationReceived?.Invoke(CrossPushNotification.Current, new PushNotificationDataEventArgs(parameters));
             //CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
             completionHandler(CurrentNotificationPresentationOption);
         }
 
         [Export("userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:")]
-        public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response,
-            Action completionHandler)
+        public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
         {
             var parameters = GetParameters(response.Notification.Request.Content.UserInfo);
 
@@ -248,14 +262,8 @@ namespace Plugin.PushNotification
             else if (response.IsDismissAction)
                 catType = NotificationCategoryType.Dismiss;
 
-            var notificationResponse = new NotificationResponse(parameters,
-                $"{response.ActionIdentifier}".Equals("com.apple.UNNotificationDefaultActionIdentifier",
-                    StringComparison.CurrentCultureIgnoreCase)
-                    ? string.Empty
-                    : $"{response.ActionIdentifier}", catType);
-            _onNotificationOpened?.Invoke(this,
-                new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier,
-                    notificationResponse.Type));
+            var notificationResponse = new NotificationResponse(parameters, $"{response.ActionIdentifier}".Equals("com.apple.UNNotificationDefaultActionIdentifier", StringComparison.CurrentCultureIgnoreCase) ? string.Empty : $"{response.ActionIdentifier}", catType);
+            _onNotificationOpened?.Invoke(this, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type));
 
             CrossPushNotification.Current.NotificationHandler?.OnOpened(notificationResponse);
 
@@ -276,9 +284,8 @@ namespace Plugin.PushNotification
             {
                 hex.AppendFormat("{0:x2}", b);
             }
-            var cleanedDeviceToken = hex.ToString();
 
-            SecureStorage.SetValue(TokenKey, cleanedDeviceToken);
+            var cleanedDeviceToken = hex.ToString();
             _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(cleanedDeviceToken));
         }
 
@@ -286,8 +293,7 @@ namespace Plugin.PushNotification
         {
             var parameters = GetParameters(data);
 
-            _onNotificationReceived?.Invoke(CrossPushNotification.Current,
-                new PushNotificationDataEventArgs(parameters));
+            _onNotificationReceived?.Invoke(CrossPushNotification.Current, new PushNotificationDataEventArgs(parameters));
 
             CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
             System.Diagnostics.Debug.WriteLine("DidReceivedMessage");
@@ -295,8 +301,7 @@ namespace Plugin.PushNotification
 
         public static void RemoteNotificationRegistrationFailed(NSError error)
         {
-            _onNotificationError?.Invoke(CrossPushNotification.Current,
-                new PushNotificationErrorEventArgs(PushNotificationErrorType.RegistrationFailed, error.Description));
+            _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.RegistrationFailed, error.Description));
         }
 
         static IDictionary<string, object> GetParameters(NSDictionary data)
@@ -310,9 +315,7 @@ namespace Plugin.PushNotification
             {
                 if (val.Key.Equals(keyAps))
                 {
-                    NSDictionary aps = data.ValueForKey(keyAps) as NSDictionary;
-
-                    if (aps != null)
+                    if (data.ValueForKey(keyAps) is NSDictionary aps)
                     {
                         foreach (var apsVal in aps)
                         {
@@ -338,7 +341,6 @@ namespace Plugin.PushNotification
                     parameters.Add($"{val.Key}", $"{val.Value}");
                 }
             }
-
 
             return parameters;
         }

@@ -113,7 +113,6 @@ namespace Plugin.PushNotification.Abstractions
             Data = data;
             Type = type;
         }
-
     }
 
     /// <summary>
@@ -159,7 +158,14 @@ namespace Plugin.PushNotification.Abstractions
         /// Push notification token
         /// </summary>
         string Token { get; }
-
+        /// <summary>
+        /// Delegate to feed token back to the plugin
+        /// </summary>
+        Func<string> RetrieveSavedToken { get; set; }
+        /// <summary>
+        /// Delegate to save the token
+        /// </summary>
+        Action<string> SaveToken { get; set; }
         /// <summary>
         /// Get all user notification categories
         /// </summary>

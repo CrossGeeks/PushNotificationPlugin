@@ -6,12 +6,12 @@ namespace PushNotificationSample
 {
     public partial class App : Application
     {
-        PushNotificationSample.MainPage mPage;
+        readonly MainPage mPage;
         public App()
         {
             InitializeComponent();
 
-            mPage = new PushNotificationSample.MainPage()
+            mPage = new MainPage()
             {
                 Message = "Hello Push Notifications!"
             };
@@ -21,12 +21,14 @@ namespace PushNotificationSample
 
         protected override void OnStart()
         {
+            SetMessageText($"{mPage.Message} TOKEN REC: {CrossPushNotification.Current.Token}");
+
             // Handle when your app starts
             CrossPushNotification.Current.OnTokenRefresh += (s, p) =>
             {
                 System.Diagnostics.Debug.WriteLine($"TOKEN REC: {p.Token}");
+                SetMessageText($"TOKEN REC: {p.Token}");
             };
-            System.Diagnostics.Debug.WriteLine($"TOKEN: {CrossPushNotification.Current.Token}");
 
             CrossPushNotification.Current.OnNotificationReceived += (s, p) =>
             {
@@ -35,24 +37,17 @@ namespace PushNotificationSample
                     System.Diagnostics.Debug.WriteLine("Received");
                     if (p.Data.ContainsKey("body"))
                     {
-                        Device.BeginInvokeOnMainThread(() =>
-                        {
-                            mPage.Message = $"{p.Data["body"]}";
-                        });
-
+                        SetMessageText($"{p.Data["body"]}");
                     }
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
-
             };
 
             CrossPushNotification.Current.OnNotificationOpened += (s, p) =>
             {
-                //System.Diagnostics.Debug.WriteLine(p.Identifier);
-
                 System.Diagnostics.Debug.WriteLine("Opened");
                 foreach (var data in p.Data)
                 {
@@ -61,10 +56,7 @@ namespace PushNotificationSample
 
                 if (!string.IsNullOrEmpty(p.Identifier))
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        mPage.Message = p.Identifier;
-                    });
+                    SetMessageText(p.Identifier);
                 }
                 else if (p.Data.ContainsKey("color"))
                 {
@@ -73,25 +65,26 @@ namespace PushNotificationSample
                         mPage.Navigation.PushAsync(new ContentPage()
                         {
                             BackgroundColor = Color.FromHex($"{p.Data["color"]}")
-
                         });
                     });
-
                 }
                 else if (p.Data.ContainsKey("aps.alert.title"))
                 {
-                    Device.BeginInvokeOnMainThread(() =>
-                    {
-                        mPage.Message = $"{p.Data["aps.alert.title"]}";
-                    });
-
+                    SetMessageText($"{p.Data["aps.alert.title"]}");
                 }
             };
             CrossPushNotification.Current.OnNotificationDeleted += (s, p) =>
             {
                 System.Diagnostics.Debug.WriteLine("Dismissed");
             };
+        }
 
+        private void SetMessageText(string text)
+        {
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                mPage.Message = text;
+            });
         }
 
         protected override void OnSleep()
