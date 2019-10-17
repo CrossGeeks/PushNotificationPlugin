@@ -157,7 +157,22 @@ Also should override these methods and make the following calls:
 ```csharp
         public override void RegisteredForRemoteNotifications(UIApplication application, NSData deviceToken)
         {
-             PushNotificationManager.DidRegisterRemoteNotifications(deviceToken);
+            // If iOS SDK version is 13 or above
+            byte[] result = new byte[deviceToken.Length];
+            System.Runtime.InteropServices.Marshal.Copy(deviceToken.Bytes, result, 0, (int)deviceToken.Length);
+            var token = BitConverter.ToString(result).Replace("-", "");
+            
+            // If iOS SDK version is 12 or below
+            //string trimmedDeviceToken = deviceToken.Description;
+            //if (!string.IsNullOrWhiteSpace(trimmedDeviceToken))
+            //{
+            //    trimmedDeviceToken = trimmedDeviceToken.Trim('<');
+            //    trimmedDeviceToken = trimmedDeviceToken.Trim('>');
+            //    trimmedDeviceToken = trimmedDeviceToken.Trim();
+            //    trimmedDeviceToken = trimmedDeviceToken.Replace(" ", "");
+            //}
+            
+            PushNotificationManager.DidRegisterRemoteNotifications(token);
         }
 
         public override void FailedToRegisterForRemoteNotifications(UIApplication application, NSError error)

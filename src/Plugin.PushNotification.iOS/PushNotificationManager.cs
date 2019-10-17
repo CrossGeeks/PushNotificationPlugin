@@ -262,18 +262,10 @@ namespace Plugin.PushNotification
             completionHandler();
         }
 
-        public static void DidRegisterRemoteNotifications(NSData deviceToken)
+        public static void DidRegisterRemoteNotifications(string token)
         {
-            string trimmedDeviceToken = deviceToken.Description;
-            if (!string.IsNullOrWhiteSpace(trimmedDeviceToken))
-            {
-                trimmedDeviceToken = trimmedDeviceToken.Trim('<');
-                trimmedDeviceToken = trimmedDeviceToken.Trim('>');
-                trimmedDeviceToken = trimmedDeviceToken.Trim();
-                trimmedDeviceToken = trimmedDeviceToken.Replace(" ", "");
-            }
-            NSUserDefaults.StandardUserDefaults.SetString(trimmedDeviceToken, TokenKey);
-            _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(trimmedDeviceToken));
+            NSUserDefaults.StandardUserDefaults.SetString(token, TokenKey);
+            _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(token));
         }
 
         public static void DidReceiveMessage(NSDictionary data)
