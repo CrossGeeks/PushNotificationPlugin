@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PushNotification\PushNotification.csproj" />
+    <ProjectReference Include="..\..\src\Plugin.PushNotification\Plugin.PushNotification.csproj" />
   </ItemGroup>
 
   <ItemGroup>
