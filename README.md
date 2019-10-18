@@ -1,16 +1,16 @@
-## Push Notification Plugin for Xamarin iOS and Android (Updated original package to use secure storage)
+## Push Notification Plugin for Xamarin iOS and Android
 Simple cross platform plugin for handling push notifications. Uses FCM for Android and APS for iOS.
 
 ### Setup
-* Available on NuGet: https://www.nuget.org/packages/Plugin.PushNotification-updated/1.3.1 
+* Available on NuGet: http://www.nuget.org/packages/Plugin.PushNotification [![NuGet](https://img.shields.io/nuget/v/Plugin.PushNotification.svg?label=NuGet)](https://www.nuget.org/packages/Plugin.PushNotification/)
 * Install into your PCL project and Client projects.
 
 **Platform Support**
 
-|Platform|Version|
+|Platform|Version|Tested
 | ------------------- | :------------------: |
-|Xamarin.iOS|iOS 8+|
-|Xamarin.Android|API 15+|
+|Xamarin.iOS|iOS 8+,|iOS13|
+|Xamarin.Android|API 15+|API 28|
 
 ### API Usage
 
@@ -22,6 +22,7 @@ Call **CrossPushNotification.Current** from any project or PCL to gain access to
 - Support for push notification category actions
 - Customize push notifications
 - Localization
+- Storage of the push token can be overwritten by a delegate.
 
 
 ## Documentation
@@ -44,5 +45,5 @@ Here you will find detailed documentation on setting up and using the Push Notif
 * [Angel Andres Mañon](https://github.com/AngelAndresM)
 * [Tymen Steur](https://github.com/TymenSteur)
 * [Sameer Khandekar](https://github.com/sameerkapps)
-* [Vikram Mahendrakar](https://github.com/vikram-ma)
+* [Px7-941](https://github.com/Px7-941)
 

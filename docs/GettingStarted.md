@@ -5,6 +5,7 @@
 Edit AndroidManifest.xml and insert the following receiver elements **inside** the **application** section:
 
 ```xml
+<uses-library android:name="org.apache.http.legacy" android:required="false" />
 <receiver 
     android:name="com.google.firebase.iid.FirebaseInstanceIdInternalReceiver" 
     android:exported="false" />

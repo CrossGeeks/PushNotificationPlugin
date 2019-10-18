@@ -8,11 +8,11 @@
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <DefineConstants>$(DefineConstants);</DefineConstants>
-    <Version>1.3.5</Version>
-    <Authors>Rendy Del Rosario, Sameer Khandekar, Vikram Mahendrakar</Authors>
+    <Version>1.4.0</Version>
+    <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
     <PackageId>Plugin.PushNotification</PackageId>
     <PackOnBuild>true</PackOnBuild>
-    <Copyright>Copyright © $(Authors) 2019</Copyright>
+	<Copyright>Copyright © 2019 $(Authors)</Copyright>
     <Description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Description>
     <PackageTags>iOS,Android,push notifications,pcl,xamarin,plugins,xam.pcl,fcm,apn</PackageTags>
     <PackageLicenseUrl></PackageLicenseUrl>
@@ -21,18 +21,17 @@
     <RepositoryUrl>https://github.com/CrossGeeks/PushNotificationPlugin</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageReleaseNotes>
-      1.4.0
-      [Update] Bumped up Xamarin.Firebase.Messaging to &gt;= 60.1142.0
-      [Fix] iOS 13 fix
-      [Add] Add delegates for SaveToken and RetrieveSavedToken to the interface with internal default storage methods
-    </PackageReleaseNotes>
+    <PackageReleaseNotes>1.4.0
+[Update] Bumped up Xamarin.Firebase.Messaging to &gt;= 60.1142.0
+[Fix] iOS 13 fix
+[Add] Add delegates for SaveToken and RetrieveSavedToken to the interface with internal default storage methods</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup>
     <NoWarn>1701;1702;1591</NoWarn>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Plugin.PushNotification.xml</DocumentationFile>
+    <Company>Rendy Del Rosario, Sameer Khandekar, Px7-941</Company>
   </PropertyGroup>
 
   <ItemGroup>
