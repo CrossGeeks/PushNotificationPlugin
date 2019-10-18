@@ -2,30 +2,53 @@
 <Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;MonoAndroid80;Xamarin.iOS10;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;MonoAndroid80;MonoAndroid81;MonoAndroid90;Xamarin.iOS10;</TargetFrameworks>
     <AssemblyName>Plugin.PushNotification</AssemblyName>
     <RootNamespace>Plugin.PushNotification</RootNamespace>
-    <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <DefineConstants>$(DefineConstants);</DefineConstants>
-    <Version>1.4.0</Version>
-    <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
     <PackageId>Plugin.PushNotification</PackageId>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <AssemblyVersion>1.4.0</AssemblyVersion>
+    <AssemblyFileVersion>1.4.0</AssemblyFileVersion>
+    <Version>1.4.0</Version>
     <PackOnBuild>true</PackOnBuild>
-	<Copyright>Copyright © 2019 $(Authors)</Copyright>
-    <Description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Description>
-    <PackageTags>iOS,Android,push notifications,pcl,xamarin,plugins,xam.pcl,fcm,apn</PackageTags>
-    <PackageLicenseUrl></PackageLicenseUrl>
+    <NeutralLanguage>en</NeutralLanguage>
+    <LangVersion>default</LangVersion>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+    <LangVersion>latest</LangVersion>
+    <PackageLicenseUrl>https://github.com/CrossGeeks/PushNotificationPlugin/blob/master/LICENSE.md</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/CrossGeeks/PushNotificationPlugin</PackageProjectUrl>
-    <PackageIcon>icon.png</PackageIcon>
+    <PackageIconUrl>https://github.com/CrossGeeks/PushNotificationPlugin/blob/master/assets/icon.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/CrossGeeks/PushNotificationPlugin</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageTags>iOS,Android,push notifications,xamarin,plugins,fcm,apn</PackageTags>
+
+    <Title>Push Notification Plugin for Xamarin</Title>
+    <Summary>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Summary>
+    <Description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Description>
     <PackageReleaseNotes>1.4.0
 [Update] Bumped up Xamarin.Firebase.Messaging to &gt;= 60.1142.0
 [Fix] iOS 13 fix
 [Add] Add delegates for SaveToken and RetrieveSavedToken to the interface with internal default storage methods</PackageReleaseNotes>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <Owners>crossgeeks,rdelrosario</Owners>
+    <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
+    <Copyright>Copyright 2017 CrossGeeks</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+    <!-- Define what happens on build and release -->
+   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DebugType>pdbonly</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -35,12 +58,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\LICENSE.md">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="images\icon.png" Pack="true" PackagePath="" />
     <Compile Include="**\*.shared.cs" />
+    <Compile Include="**\*.shared.*.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
@@ -50,9 +69,11 @@
     <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Firebase.Messaging" Version="60.1142.1" />
     <Compile Include="**\*.android.cs" />
+     <Compile Include="**\*.android.*.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
     <Compile Include="**\*.apple.cs" />
+     <Compile Include="**\*.apple.*.cs" />
   </ItemGroup>
 </Project>

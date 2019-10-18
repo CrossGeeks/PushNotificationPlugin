@@ -3,28 +3,27 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29324.140
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PushNotification", "src\PushNotification\PushNotification.csproj", "{A6FCEF44-D2BA-42C7-B3CB-13667BCD7B54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PushNotification", "PushNotification\PushNotification.csproj", "{A6FCEF44-D2BA-42C7-B3CB-13667BCD7B54}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{39BF9949-28B0-4798-97BC-2298B0A22E60}"
 	ProjectSection(SolutionItems) = preProject
-		docs\AndroidCustomization.md = docs\AndroidCustomization.md
-		docs\FAQ.md = docs\FAQ.md
-		docs\GettingStarted.md = docs\GettingStarted.md
-		docs\iOSCustomization.md = docs\iOSCustomization.md
-		docs\LocalizedPushNotifications.md = docs\LocalizedPushNotifications.md
-		docs\NotificationActions.md = docs\NotificationActions.md
-		nuget\Plugin.nuspec = nuget\Plugin.nuspec
-		README.md = README.md
-		docs\ReceivingNotifications.md = docs\ReceivingNotifications.md
+		..\docs\AndroidCustomization.md = ..\docs\AndroidCustomization.md
+		..\docs\FAQ.md = ..\docs\FAQ.md
+		..\docs\GettingStarted.md = ..\docs\GettingStarted.md
+		..\docs\iOSCustomization.md = ..\docs\iOSCustomization.md
+		..\docs\LocalizedPushNotifications.md = ..\docs\LocalizedPushNotifications.md
+		..\docs\NotificationActions.md = ..\docs\NotificationActions.md
+		..\README.md = ..\README.md
+		..\docs\ReceivingNotifications.md = ..\docs\ReceivingNotifications.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{E1814DAB-B397-4CEB-A268-25E5B66E0712}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushNotificationSample", "samples\PushNotificationSample\PushNotificationSample.csproj", "{0D84321D-BCAC-4306-A0DF-0BFC26DB4895}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushNotificationSample", "..\samples\PushNotificationSample\PushNotificationSample.csproj", "{0D84321D-BCAC-4306-A0DF-0BFC26DB4895}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushNotificationSample.iOS", "samples\PushNotificationSample.iOS\PushNotificationSample.iOS.csproj", "{39791A11-A5D4-4F34-9A47-36B05C83FF70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushNotificationSample.iOS", "..\samples\PushNotificationSample.iOS\PushNotificationSample.iOS.csproj", "{39791A11-A5D4-4F34-9A47-36B05C83FF70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushNotificationSample.Android", "samples\PushNotificationSample.Android\PushNotificationSample.Android.csproj", "{1BDE8CAC-3116-49D1-BF1A-A3177B823A95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushNotificationSample.Android", "..\samples\PushNotificationSample.Android\PushNotificationSample.Android.csproj", "{1BDE8CAC-3116-49D1-BF1A-A3177B823A95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
