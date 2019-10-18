@@ -26,11 +26,11 @@ steps:
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
-    restoreSolution: 'src/*.sln'
+    restoreSolution: 'src/**/*.sln'
 
 - task: MSBuild@1
   displayName: 'Build solution'
   inputs:
-    solution: 'src/*.sln'
+    solution: 'src/**/*.sln'
     msbuildArguments: '/t:restore;build /p:PackageOutputPath=$(build.artifactstagingdirectory)'
     clean: true
