@@ -7,10 +7,10 @@ Simple cross platform plugin for handling push notifications. Uses FCM for Andro
 
 **Platform Support**
 
-|Platform|Version|
-| ------------------- | :------------------: |
-|Xamarin.iOS|iOS 8+|
-|Xamarin.Android|API 15+|
+|Platform|Version|Tested
+| ------------------- | :------------------: | :-------------------: |
+|Xamarin.iOS|iOS 8+|iOS13|
+|Xamarin.Android|API 15+|API 28|
 
 ### API Usage
 
@@ -22,6 +22,7 @@ Call **CrossPushNotification.Current** from any project or PCL to gain access to
 - Support for push notification category actions
 - Customize push notifications
 - Localization
+- Storage of the push token can be overwritten by a delegate.
 
 
 ## Documentation
@@ -43,3 +44,6 @@ Here you will find detailed documentation on setting up and using the Push Notif
 * [Alberto Florenzan](https://github.com/aflorenzan)
 * [Angel Andres Mañon](https://github.com/AngelAndresM)
 * [Tymen Steur](https://github.com/TymenSteur)
+* [Sameer Khandekar](https://github.com/sameerkapps)
+* [Px7-941](https://github.com/Px7-941)
+

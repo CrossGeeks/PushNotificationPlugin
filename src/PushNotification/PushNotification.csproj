@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="MSBuild.Sdk.Extras">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;MonoAndroid80;Xamarin.iOS10;</TargetFrameworks>
+    <AssemblyName>Plugin.PushNotification</AssemblyName>
+    <RootNamespace>Plugin.PushNotification</RootNamespace>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>$(DefineConstants);</DefineConstants>
+    <Version>1.4.0</Version>
+    <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
+    <PackageId>Plugin.PushNotification</PackageId>
+    <PackOnBuild>true</PackOnBuild>
+	<Copyright>Copyright © 2019 $(Authors)</Copyright>
+    <Description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Description>
+    <PackageTags>iOS,Android,push notifications,pcl,xamarin,plugins,xam.pcl,fcm,apn</PackageTags>
+    <PackageLicenseUrl></PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/CrossGeeks/PushNotificationPlugin</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/CrossGeeks/PushNotificationPlugin</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReleaseNotes>1.4.0
+[Update] Bumped up Xamarin.Firebase.Messaging to &gt;= 60.1142.0
+[Fix] iOS 13 fix
+[Add] Add delegates for SaveToken and RetrieveSavedToken to the interface with internal default storage methods</PackageReleaseNotes>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>1701;1702;1591</NoWarn>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Plugin.PushNotification.xml</DocumentationFile>
+    <Company>Rendy Del Rosario, Sameer Khandekar, Px7-941</Company>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="images\icon.png" Pack="true" PackagePath="" />
+    <Compile Include="**\*.shared.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.3" />
+    <PackageReference Include="Xamarin.Firebase.Messaging" Version="60.1142.1" />
+    <Compile Include="**\*.android.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+    <Compile Include="**\*.apple.cs" />
+  </ItemGroup>
+</Project>

@@ -5,6 +5,7 @@
 Edit AndroidManifest.xml and insert the following receiver elements **inside** the **application** section:
 
 ```xml
+<uses-library android:name="org.apache.http.legacy" android:required="false" />
 <receiver 
     android:name="com.google.firebase.iid.FirebaseInstanceIdInternalReceiver" 
     android:exported="false" />
@@ -29,7 +30,7 @@ Add google-services.json to Android project. Make sure build action is GoogleSer
 
 ![ADD JSON](https://github.com/CrossGeeks/FirebasePushNotificationPlugin/blob/master/images/android-googleservices-json.png?raw=true)
 
-Must compile against 26+ as plugin is using API 26 specific things. Here is a great breakdown: http://redth.codes/such-android-api-levels-much-confuse-wow/ (Android project must be compiled using 8.0+ target framework)
+Must compile against 26+ as plugin is using API 26 specific things. Here is a great breakdown: http://redth.codes/such-android-api-levels-much-confuse-wow/ (Android project must be compiled using 9.0+ target framework)
 
 ### Android Initialization
 
@@ -42,6 +43,7 @@ There are 3 overrides to **PushNotificationManager.Initialize**:
 - **PushNotificationManager.Initialize(Context context, NotificationUserCategory[] categories, bool resetToken,bool createDefaultNotificationChannel, bool autoRegistration)**  : Initializes plugin using user notification categories. Uses a DefaultPushHandler to provide the ui for the notification supporting buttons based on the action_click send on the notification
 
 - **PushNotificationManager.Initialize(Context context,IPushNotificationHandler pushHandler, bool resetToken,bool createDefaultNotificationChannel, bool autoRegistration)** : Initializes the plugin using a custom push notification handler to provide custom ui and behaviour notifications receipt and opening.
+
 
 **Important: While debugging set resetToken parameter to true.**
 
@@ -82,9 +84,7 @@ Example of initialization:
               {
 
 
-              };
-
-	  
+              };	  
          }
     }
 
