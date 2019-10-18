@@ -154,15 +154,12 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="4.2.0.815419" />
+    <PackageReference Include="Plugin.PushNotification" Version="2.1.11" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PushNotificationSample\PushNotificationSample.csproj">
       <Project>{0d84321d-bcac-4306-a0df-0bfc26db4895}</Project>
       <Name>PushNotificationSample</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Plugin.PushNotification\Plugin.PushNotification.csproj">
-      <Project>{A6FCEF44-D2BA-42C7-B3CB-13667BCD7B54}</Project>
-      <Name>Plugin.PushNotification</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />

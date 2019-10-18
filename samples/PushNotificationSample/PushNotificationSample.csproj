@@ -8,10 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Xamarin.Forms" Version="4.2.0.815419" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Plugin.PushNotification\Plugin.PushNotification.csproj" />
+    <PackageReference Include="Plugin.PushNotification" Version="2.1.11" />
   </ItemGroup>
 
   <ItemGroup>
