@@ -8,8 +8,8 @@ Simple cross platform plugin for handling push notifications. Uses FCM for Andro
 **Platform Support**
 
 |Platform|Version|Tested
-| ------------------- | :------------------: |
-|Xamarin.iOS|iOS 8+,|iOS13|
+| ------------------- | :------------------: | :-------------------: |
+|Xamarin.iOS|iOS 8+|iOS13|
 |Xamarin.Android|API 15+|API 28|
 
 ### API Usage
