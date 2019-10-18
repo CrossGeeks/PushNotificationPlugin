@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Plugin.PushNotification.Abstractions
+namespace Plugin.PushNotification
 {
     public enum NotificationActionType
     {

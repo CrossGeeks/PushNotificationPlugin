@@ -23,6 +23,9 @@ steps:
   inputs:
     versionSpec: 4.9.3
 
+- script: dotnet restore
+    displayName: 'dotnet restore'
+
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:

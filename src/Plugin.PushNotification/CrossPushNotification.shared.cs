@@ -1,5 +1,4 @@
-﻿using Plugin.PushNotification.Abstractions;
-using System;
+﻿using System;
 
 namespace Plugin.PushNotification
 {

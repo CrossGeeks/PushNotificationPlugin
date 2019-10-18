@@ -30,7 +30,7 @@ steps:
 - task: MSBuild@1
   displayName: 'Build beta'
   inputs:
-    solution: 'src/PushNotification/Plugin.PushNotification.csproj'
+    solution: 'src/Plugin.PushNotification/Plugin.PushNotification.csproj'
     configuration: 'Release'
     msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)  '
     clean: true
@@ -39,7 +39,7 @@ steps:
 - task: MSBuild@1
   displayName: 'Build final'
   inputs:
-    solution: 'src/PushNotification/Plugin.PushNotification.csproj'
+    solution: 'src/Plugin.PushNotification/Plugin.PushNotification.csproj'
     configuration: 'Release'
     msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber) /p:PackageOutputPath=$(build.artifactstagingdirectory)/final /p:AssemblyFileVersion=$(Build.BuildNumber) '
     clean: true

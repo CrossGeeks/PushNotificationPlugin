@@ -9,7 +9,6 @@ using Android.Media;
 using Android.OS;
 using Android.Support.V4.App;
 using Java.Util;
-using Plugin.PushNotification.Abstractions;
 
 namespace Plugin.PushNotification
 {

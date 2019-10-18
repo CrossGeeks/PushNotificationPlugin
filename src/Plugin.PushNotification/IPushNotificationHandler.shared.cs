@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Plugin.PushNotification.Abstractions
+namespace Plugin.PushNotification
 {
     public interface IPushNotificationHandler
     {

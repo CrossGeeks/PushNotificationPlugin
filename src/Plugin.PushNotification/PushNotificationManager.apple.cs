@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Foundation;
-using Plugin.PushNotification.Abstractions;
 using UIKit;
 using UserNotifications;
 

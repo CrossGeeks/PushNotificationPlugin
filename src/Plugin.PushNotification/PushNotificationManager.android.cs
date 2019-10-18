@@ -8,8 +8,6 @@ using Android.Content.PM;
 using Android.Graphics;
 using Android.OS;
 using Firebase.Iid;
-using Plugin.PushNotification.Abstractions;
-
 namespace Plugin.PushNotification
 {
     /// <summary>
