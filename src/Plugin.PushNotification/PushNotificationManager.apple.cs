@@ -285,6 +285,7 @@ namespace Plugin.PushNotification
             }
 
             var cleanedDeviceToken = hex.ToString();
+            InternalSaveToken(cleanedDeviceToken);
             _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(cleanedDeviceToken));
         }
 
