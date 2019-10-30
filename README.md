@@ -48,4 +48,5 @@ Here you will find detailed documentation on setting up and using the Push Notif
 * [Tymen Steur](https://github.com/TymenSteur)
 * [Sameer Khandekar](https://github.com/sameerkapps)
 * [Px7-941](https://github.com/Px7-941)
+* [Clinton Rocksmith](https://github.com/clintonrocksmith)
 
