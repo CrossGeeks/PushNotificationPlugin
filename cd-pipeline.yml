@@ -1,5 +1,5 @@
 # set the version numbering, this results in 1.0.1 for the first build incrementing that way.
-name: 2.1$(rev:.r)
+name: 3.0$(rev:.r)
 
 # Defines that a commit to the master branch should trigger this build
 trigger:
