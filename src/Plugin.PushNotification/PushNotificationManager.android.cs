@@ -2,18 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Android.Gms.Tasks;
 using Android.Graphics;
 using Android.OS;
 using Firebase.Iid;
+using Firebase.Messaging;
+using Java.Interop;
+
 namespace Plugin.PushNotification
 {
     /// <summary>
     /// Implementation for Feature
     /// </summary>
-    public class PushNotificationManager : IPushNotification
+    public class PushNotificationManager : Java.Lang.Object, IPushNotification, IOnCompleteListener
     {
         //internal static PushNotificationActionReceiver ActionReceiver = null;
         static NotificationResponse delayedNotificationResponse = null;
@@ -33,7 +38,7 @@ namespace Plugin.PushNotification
         public static ActivityFlags? NotificationActivityFlags { get; set; } = ActivityFlags.ClearTop | ActivityFlags.SingleTop;
         public static string DefaultNotificationChannelId { get; set; } = "PushNotificationChannel";
         public static string DefaultNotificationChannelName { get; set; } = "General";
-
+        static TaskCompletionSource<string> _tokenTcs;
         internal static Type DefaultNotificationActivityType { get; set; } = null;
 
         static Context _context;
@@ -116,6 +121,7 @@ namespace Plugin.PushNotification
             _context = context;
 
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
+            FirebaseMessaging.Instance.AutoInitEnabled = autoRegistration;
             if (autoRegistration)
             {
                 ThreadPool.QueueUserWorkItem(state =>
@@ -172,9 +178,10 @@ namespace Plugin.PushNotification
 
         public async System.Threading.Tasks.Task RegisterForPushNotifications()
         {
-            await System.Threading.Tasks.Task.Run(() =>
+            FirebaseMessaging.Instance.AutoInitEnabled = true;
+            await System.Threading.Tasks.Task.Run(async() =>
             {
-                var token = FirebaseInstanceId.Instance.Token;
+                var token = await GetTokenAsync();
                 if (!string.IsNullOrEmpty(token))
                 {
                     Token = token;
@@ -182,8 +189,16 @@ namespace Plugin.PushNotification
             });
         }
 
+        async Task<string> GetTokenAsync()
+        {
+            _tokenTcs = new TaskCompletionSource<string>();
+            FirebaseInstanceId.Instance.GetInstanceId().AddOnCompleteListener(this);
+            return await _tokenTcs.Task;
+        }
+
         public void UnregisterForPushNotifications()
         {
+            FirebaseMessaging.Instance.AutoInitEnabled = false;
             Reset();
         }
 
@@ -356,6 +371,12 @@ namespace Plugin.PushNotification
             var editor = Application.Context.GetSharedPreferences(KeyGroupName, FileCreationMode.Private).Edit();
             editor.PutString(TokenKey, token);
             editor.Commit();
+        }
+
+        public void OnComplete(Android.Gms.Tasks.Task task)
+        {
+            string token = task.Result.JavaCast<IInstanceIdResult>().Token;
+            _tokenTcs?.TrySetResult(token);
         }
 
         #endregion

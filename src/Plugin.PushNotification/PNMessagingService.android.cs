@@ -2,6 +2,7 @@
 using System.Linq;
 using Android.App;
 using Android.Content;
+using Firebase.Iid;
 using Firebase.Messaging;
 
 namespace Plugin.PushNotification
@@ -10,10 +11,10 @@ namespace Plugin.PushNotification
     [IntentFilter(new[] { "com.google.firebase.MESSAGING_EVENT" })]
     public class PNMessagingService : FirebaseMessagingService
     {
-        public override void OnMessageReceived(RemoteMessage message)
+        public override void OnMessageReceived(RemoteMessage p0)
         {
             var parameters = new Dictionary<string, object>();
-            var notification = message.GetNotification();
+            var notification = p0.GetNotification();
             if (notification != null)
             {
                 if (!string.IsNullOrEmpty(notification.Body))
@@ -54,7 +55,7 @@ namespace Plugin.PushNotification
                 if (!string.IsNullOrEmpty(notification.Color))
                     parameters.Add("color", notification.Color);
             }
-            foreach (var d in message.Data)
+            foreach (var d in p0.Data)
             {
                 if (!parameters.ContainsKey(d.Key))
                     parameters.Add(d.Key, d.Value);
@@ -62,6 +63,13 @@ namespace Plugin.PushNotification
           
             PushNotificationManager.RegisterData(parameters);
             CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
+        }
+
+        public override void OnNewToken(string p0)
+        {
+            ((PushNotificationManager)CrossPushNotification.Current).Token = p0;
+            PushNotificationManager.RegisterToken(p0);
+            System.Diagnostics.Debug.WriteLine($"REFRESHED TOKEN: {p0}");
         }
     }
 }
