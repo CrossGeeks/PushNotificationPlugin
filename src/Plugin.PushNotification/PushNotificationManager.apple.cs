@@ -121,7 +121,7 @@ namespace Plugin.PushNotification
         {
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
 
-            /*if (options.ContainsKey(UIApplication.LaunchOptionsRemoteNotificationKey))
+            if (options.ContainsKey(UIApplication.LaunchOptionsRemoteNotificationKey))
             {
                 var parameters = GetParameters(options.ObjectForKey(UIApplication.LaunchOptionsRemoteNotificationKey) as NSDictionary);
 
@@ -129,7 +129,7 @@ namespace Plugin.PushNotification
                 _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type));
 
                 CrossPushNotification.Current.NotificationHandler?.OnOpened(notificationResponse);
-            }*/
+            }
 
             if (autoRegistration)
             {

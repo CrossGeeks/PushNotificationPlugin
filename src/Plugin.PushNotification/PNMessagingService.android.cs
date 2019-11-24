@@ -2,7 +2,6 @@
 using System.Linq;
 using Android.App;
 using Android.Content;
-using Firebase.Iid;
 using Firebase.Messaging;
 
 namespace Plugin.PushNotification
