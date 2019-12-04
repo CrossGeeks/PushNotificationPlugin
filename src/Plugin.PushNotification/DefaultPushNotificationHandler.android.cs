@@ -106,6 +106,11 @@ namespace Plugin.PushNotification
         /// </summary>
         public const string ChannelIdKey = "android_channel_id";
 
+        /// <summary>
+        /// Full screen intent
+        /// </summary>
+        public const string FullScreenIntentKey = "full_screen_intent";
+
         public void OnOpened(NotificationResponse response)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
@@ -280,6 +285,7 @@ namespace Plugin.PushNotification
             var requestCode = new Java.Util.Random().NextInt();
             var pendingIntent = PendingIntent.GetActivity(context, requestCode, resultIntent, PendingIntentFlags.UpdateCurrent);
 
+       
             var chanId = PushNotificationManager.DefaultNotificationChannelId;
             if (parameters.TryGetValue(ChannelIdKey, out var channelId) && channelId != null)
             {
@@ -292,6 +298,14 @@ namespace Plugin.PushNotification
                 .SetContentText(message)
                 .SetAutoCancel(true)
                 .SetContentIntent(pendingIntent);
+
+            if (parameters.TryGetValue(FullScreenIntentKey, out var fullScreenIntent) && ($"{fullScreenIntent}" == "true" || $"{fullScreenIntent}" == "1"))
+            {
+                var fullScreenPendingIntent = PendingIntent.GetActivity(context, requestCode, resultIntent, PendingIntentFlags.UpdateCurrent);
+                notificationBuilder.SetFullScreenIntent(fullScreenPendingIntent,true);
+                notificationBuilder.SetCategory(NotificationCompat.CategoryCall);
+                parameters[PriorityKey] = "high";
+            }
 
             var deleteIntent = new Intent(context, typeof(PushNotificationDeletedReceiver));
             var pendingDeleteIntent = PendingIntent.GetBroadcast(context, requestCode, deleteIntent, PendingIntentFlags.UpdateCurrent);
@@ -307,25 +321,25 @@ namespace Plugin.PushNotification
                         switch (priorityValue.ToLower())
                         {
                             case "max":
-                                notificationBuilder.SetPriority((int)Android.App.NotificationPriority.Max);
+                                notificationBuilder.SetPriority(NotificationCompat.PriorityMax);
                                 notificationBuilder.SetVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
                                 break;
                             case "high":
-                                notificationBuilder.SetPriority((int)Android.App.NotificationPriority.High);
+                                notificationBuilder.SetPriority(NotificationCompat.PriorityHigh);
                                 notificationBuilder.SetVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
                                 break;
                             case "default":
-                                notificationBuilder.SetPriority((int)Android.App.NotificationPriority.Default);
+                                notificationBuilder.SetPriority(NotificationCompat.PriorityDefault);
                                 notificationBuilder.SetVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
                                 break;
                             case "low":
-                                notificationBuilder.SetPriority((int)Android.App.NotificationPriority.Low);
+                                notificationBuilder.SetPriority(NotificationCompat.PriorityLow);
                                 break;
                             case "min":
-                                notificationBuilder.SetPriority((int)Android.App.NotificationPriority.Min);
+                                notificationBuilder.SetPriority(NotificationCompat.PriorityMin);
                                 break;
                             default:
-                                notificationBuilder.SetPriority((int)Android.App.NotificationPriority.Default);
+                                notificationBuilder.SetPriority(NotificationCompat.PriorityDefault);
                                 notificationBuilder.SetVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
                                 break;
                         }
