@@ -237,7 +237,7 @@ namespace Plugin.PushNotification
             var permissonGranted = await permisionTask.Task;
             if (permissonGranted)
             {
-                UIApplication.SharedApplication.RegisterForRemoteNotifications();
+               InvokeOnMainThread(() => UIApplication.SharedApplication.RegisterForRemoteNotifications());
             }
         }
 

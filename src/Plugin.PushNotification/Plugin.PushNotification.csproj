@@ -76,4 +76,7 @@
      <Compile Include="**\*.apple.*.cs" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid90'">
+    <PackageReference Include="Xamarin.GooglePlayServices.Basement" Version="71.1620.0" />
+  </ItemGroup>
 </Project>
