@@ -148,7 +148,7 @@ namespace Plugin.PushNotification
         /// Register push notifications on demand
         /// </summary>
         /// <returns></returns>
-        Task RegisterForPushNotifications();
+        void RegisterForPushNotifications();
         /// <summary>
         /// Unregister push notifications on demand
         /// </summary>

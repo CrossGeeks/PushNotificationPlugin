@@ -117,7 +117,7 @@ namespace Plugin.PushNotification
             }
         }
 
-        public static async Task Initialize(NSDictionary options, bool autoRegistration = true)
+        public static void Initialize(NSDictionary options, bool autoRegistration = true)
         {
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
 
@@ -133,19 +133,19 @@ namespace Plugin.PushNotification
 
             if (autoRegistration)
             {
-                await CrossPushNotification.Current.RegisterForPushNotifications();
+               CrossPushNotification.Current.RegisterForPushNotifications();
             }
         }
 
-        public static async Task Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true)
+        public static void Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true)
         {
             CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
-            await Initialize(options, autoRegistration);
+            Initialize(options, autoRegistration);
         }
 
-        public static async Task Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true)
+        public static void Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true)
         {
-            await Initialize(options, autoRegistration);
+            Initialize(options, autoRegistration);
             RegisterUserNotificationCategories(notificationUserCategories);
         }
 
@@ -199,10 +199,8 @@ namespace Plugin.PushNotification
             }
         }
 
-        public async Task RegisterForPushNotifications()
+        public void RegisterForPushNotifications()
         {
-            var permisionTask = new TaskCompletionSource<bool>();
-
             // Register your app for remote notifications.
             if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
             {
@@ -222,7 +220,10 @@ namespace Plugin.PushNotification
                     {
                         _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.PermissionDenied, "Push notification permission not granted"));
                     }
-                    permisionTask.SetResult(granted);
+                    else
+                    {
+                        UIApplication.SharedApplication.RegisterForRemoteNotifications();
+                    }
                 });
             }
             else
@@ -231,13 +232,7 @@ namespace Plugin.PushNotification
                 var allNotificationTypes = UIUserNotificationType.Alert | UIUserNotificationType.Badge | UIUserNotificationType.Sound;
                 var settings = UIUserNotificationSettings.GetSettingsForTypes(allNotificationTypes, null);
                 UIApplication.SharedApplication.RegisterUserNotificationSettings(settings);
-                permisionTask.SetResult(true);
-            }
-
-            var permissonGranted = await permisionTask.Task;
-            if (permissonGranted)
-            {
-               InvokeOnMainThread(() => UIApplication.SharedApplication.RegisterForRemoteNotifications());
+                UIApplication.SharedApplication.RegisterForRemoteNotifications();
             }
         }
 
