@@ -222,7 +222,7 @@ namespace Plugin.PushNotification
                     }
                     else
                     {
-                        UIApplication.SharedApplication.RegisterForRemoteNotifications();
+                        this.InvokeOnMainThread(()=> UIApplication.SharedApplication.RegisterForRemoteNotifications());
                     }
                 });
             }
