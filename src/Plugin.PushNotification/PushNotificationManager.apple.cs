@@ -131,17 +131,20 @@ namespace Plugin.PushNotification
 
             if (options?.ContainsKey(UIApplication.LaunchOptionsRemoteNotificationKey)??false)
             {
-                var parameters = GetParameters(options.ObjectForKey(UIApplication.LaunchOptionsRemoteNotificationKey) as NSDictionary);
+                var pushPayload = options[UIApplication.LaunchOptionsRemoteNotificationKey] as NSDictionary;
+                if (pushPayload != null)
+                {
+                    var parameters = GetParameters(pushPayload);
 
-                var notificationResponse = new NotificationResponse(parameters, "com.apple.UNNotificationDefaultActionIdentifier", NotificationCategoryType.Default);
+                    var notificationResponse = new NotificationResponse(parameters, "com.apple.UNNotificationDefaultActionIdentifier", NotificationCategoryType.Default);
 
-                if (_onNotificationOpened == null && enableDelayedResponse)
-                    delayedNotificationResponse = notificationResponse;
-                else
-                    _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type));
+                    if (_onNotificationOpened == null && enableDelayedResponse)
+                        delayedNotificationResponse = notificationResponse;
+                    else
+                        _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type));
 
-                CrossPushNotification.Current.NotificationHandler?.OnOpened(notificationResponse);
-           
+                    CrossPushNotification.Current.NotificationHandler?.OnOpened(notificationResponse);
+                }
             }
 
             if (autoRegistration)
