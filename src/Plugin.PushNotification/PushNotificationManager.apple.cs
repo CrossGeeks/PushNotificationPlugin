@@ -136,7 +136,7 @@ namespace Plugin.PushNotification
                 {
                     var parameters = GetParameters(pushPayload);
 
-                    var notificationResponse = new NotificationResponse(parameters, "com.apple.UNNotificationDefaultActionIdentifier", NotificationCategoryType.Default);
+                    var notificationResponse = new NotificationResponse(parameters,string.Empty, NotificationCategoryType.Default);
 
                     if (_onNotificationOpened == null && enableDelayedResponse)
                         delayedNotificationResponse = notificationResponse;
