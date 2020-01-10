@@ -268,6 +268,47 @@ namespace Plugin.PushNotification
             var parameters = GetParameters(notification.Request.Content.UserInfo);
             _onNotificationReceived?.Invoke(CrossPushNotification.Current, new PushNotificationDataEventArgs(parameters));
             CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
+
+            string[] priorityKeys = new string[] { "priority", "aps.priority" };
+
+
+            foreach (var pKey in priorityKeys)
+            {
+                if (parameters.TryGetValue(pKey, out object priority))
+                {
+                    var priorityValue = $"{priority}".ToLower();
+                    switch (priorityValue)
+                    {
+                        case "max":
+                        case "high":
+                            if (!CurrentNotificationPresentationOption.HasFlag(UNNotificationPresentationOptions.Alert))
+                            {
+                                CurrentNotificationPresentationOption |= UNNotificationPresentationOptions.Alert;
+
+                            }
+
+                            if (!CurrentNotificationPresentationOption.HasFlag(UNNotificationPresentationOptions.Sound))
+                            {
+                                CurrentNotificationPresentationOption |= UNNotificationPresentationOptions.Sound;
+
+                            }
+                            break;
+                        case "low":
+                        case "min":
+                        case "default":
+                        default:
+                            if (CurrentNotificationPresentationOption.HasFlag(UNNotificationPresentationOptions.Alert))
+                            {
+                                CurrentNotificationPresentationOption &= ~UNNotificationPresentationOptions.Alert;
+
+                            }
+                            break;
+                    }
+
+                    break;
+                }
+            }
+
             completionHandler(CurrentNotificationPresentationOption);
         }
 
