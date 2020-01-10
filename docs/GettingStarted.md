@@ -2,6 +2,8 @@
 
 ### Android Configuration
 
+First, make sure you setup everthing on Firebase portal
+
 Add this permission:
 
 ```xml
