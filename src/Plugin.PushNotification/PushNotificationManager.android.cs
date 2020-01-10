@@ -42,43 +42,7 @@ namespace Plugin.PushNotification
         internal static Type DefaultNotificationActivityType { get; set; } = null;
 
         static Context _context;
-
-        [Obsolete("ProcessIntent with these parameters is deprecated, please use the other override instead.")]
-        public static void ProcessIntent(Intent intent, bool enableDelayedResponse = true)
-        {
-            Bundle extras = intent?.Extras;
-            if (extras != null && !extras.IsEmpty)
-            {
-                var parameters = new Dictionary<string, object>();
-                foreach (var key in extras.KeySet())
-                {
-                    if (!parameters.ContainsKey(key) && extras.Get(key) != null)
-                        parameters.Add(key, $"{extras.Get(key)}");
-                }
-
-                var manager = _context.GetSystemService(Context.NotificationService) as NotificationManager;
-                var notificationId = extras.GetInt(DefaultPushNotificationHandler.ActionNotificationIdKey, -1);
-                if (notificationId != -1)
-                {
-                    var notificationTag = extras.GetString(DefaultPushNotificationHandler.ActionNotificationTagKey, string.Empty);
-                    if (notificationTag == null)
-                        manager.Cancel(notificationId);
-                    else
-                        manager.Cancel(notificationTag, notificationId);
-                }
-
-
-                var response = new NotificationResponse(parameters, extras.GetString(DefaultPushNotificationHandler.ActionIdentifierKey, string.Empty));
-
-                if (_onNotificationOpened == null && enableDelayedResponse)
-                    delayedNotificationResponse = response;
-                else
-                    _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(response.Data, response.Identifier, response.Type));
-
-                CrossPushNotification.Current.NotificationHandler?.OnOpened(response);
-            }
-        }
-
+        
         public static void ProcessIntent(Activity activity, Intent intent, bool enableDelayedResponse = true)
         {
             DefaultNotificationActivityType = activity.GetType();

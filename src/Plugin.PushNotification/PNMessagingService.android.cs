@@ -54,11 +54,32 @@ namespace Plugin.PushNotification
                 if (!string.IsNullOrEmpty(notification.Color))
                     parameters.Add("color", notification.Color);
             }
+
             foreach (var d in p0.Data)
             {
                 if (!parameters.ContainsKey(d.Key))
                     parameters.Add(d.Key, d.Value);
             }
+
+            //Fix localization arguments parsing
+            string[] localizationKeys=new string[]{ "title_loc_args", "body_loc_args"};
+            foreach(var locKey in localizationKeys)
+            {
+                if (parameters.ContainsKey(locKey) && parameters[locKey] is string parameterValue)
+                {
+                    if (parameterValue.StartsWith("[") && parameterValue.EndsWith("]") && parameterValue.Length > 2)
+                    {
+
+                        var arrayValues = parameterValue.Substring(1, parameterValue.Length - 2);
+                        parameters[locKey] = arrayValues.Split(',').Select(t => t.Trim()).ToArray();
+                    }
+                    else
+                    {
+                        parameters[locKey] = new string[] { };
+                    }
+                }
+            }
+           
           
             PushNotificationManager.RegisterData(parameters);
             CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
