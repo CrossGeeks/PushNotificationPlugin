@@ -267,7 +267,7 @@ namespace Plugin.PushNotification
             System.Diagnostics.Debug.WriteLine("WillPresentNotification");
             var parameters = GetParameters(notification.Request.Content.UserInfo);
             _onNotificationReceived?.Invoke(CrossPushNotification.Current, new PushNotificationDataEventArgs(parameters));
-            //CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
+            CrossPushNotification.Current.NotificationHandler?.OnReceived(parameters);
             completionHandler(CurrentNotificationPresentationOption);
         }
 
