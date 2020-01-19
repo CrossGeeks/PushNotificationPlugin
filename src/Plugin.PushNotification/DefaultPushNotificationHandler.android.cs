@@ -481,7 +481,7 @@ namespace Plugin.PushNotification
             }
         }
 
-        public void OnError(string error)
+        public virtual void OnError(string error)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnError - {error}");
         }
