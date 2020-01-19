@@ -104,19 +104,19 @@ namespace Plugin.PushNotification
         /// <summary>
         /// Channel id
         /// </summary>
-        public const string ChannelIdKey = "android_channel_id";
+        public const string ChannelIdKey = "channel_id";
 
         /// <summary>
         /// Full screen intent
         /// </summary>
         public const string FullScreenIntentKey = "full_screen_intent";
 
-        public void OnOpened(NotificationResponse response)
+        public virtual void OnOpened(NotificationResponse response)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
         }
 
-        public void OnReceived(IDictionary<string, object> parameters)
+        public virtual void OnReceived(IDictionary<string, object> parameters)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnReceived");
 
