@@ -8,6 +8,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.Gms.Tasks;
 using Android.Graphics;
+using Android.Media;
 using Android.OS;
 using Firebase.Iid;
 using Firebase.Messaging;
@@ -32,12 +33,14 @@ namespace Plugin.PushNotification
         public static string NotificationContentTextKey { get; set; }
         public static string NotificationContentDataKey { get; set; }
         public static int IconResource { get; set; }
+        public static int LargeIconResource { get; set; }
         public static Android.Net.Uri SoundUri { get; set; }
         public static Color? Color { get; set; }
         public static Type NotificationActivityType { get; set; }
         public static ActivityFlags? NotificationActivityFlags { get; set; } = ActivityFlags.ClearTop | ActivityFlags.SingleTop;
         public static string DefaultNotificationChannelId { get; set; } = "PushNotificationChannel";
         public static string DefaultNotificationChannelName { get; set; } = "General";
+        public static NotificationImportance DefaultNotificationChannelImportance { get; set; } = NotificationImportance.Default;
         static TaskCompletionSource<string> _tokenTcs;
         internal static Type DefaultNotificationActivityType { get; set; } = null;
 
@@ -128,9 +131,27 @@ namespace Plugin.PushNotification
                 var channelId = DefaultNotificationChannelId;
                 var channelName = DefaultNotificationChannelName;
                 var notificationManager = (NotificationManager)context.GetSystemService(Context.NotificationService);
+                var notChannel = new NotificationChannel(channelId,
+                    channelName, DefaultNotificationChannelImportance);
+                
+                if(SoundUri !=null)
+                {
+                    try
+                    {
+                        var soundAttributes = new AudioAttributes.Builder()
+                                             .SetContentType(AudioContentType.Sonification)
+                                             .SetUsage(AudioUsageKind.Notification).Build();
 
-                notificationManager.CreateNotificationChannel(new NotificationChannel(channelId,
-                    channelName, NotificationImportance.Default));
+                        notChannel.SetSound(SoundUri, soundAttributes);
+
+                    }catch(Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex);
+                    }
+                 
+                }
+               
+                notificationManager.CreateNotificationChannel(notChannel);
             }
             System.Diagnostics.Debug.WriteLine(CrossPushNotification.Current.Token);
         }
@@ -341,6 +362,31 @@ namespace Plugin.PushNotification
         {
             string token = task.Result.JavaCast<IInstanceIdResult>().Token;
             _tokenTcs?.TrySetResult(token);
+        }
+
+        public void ClearAllNotifications()
+        {
+            NotificationManager manager = Application.Context.GetSystemService(Context.NotificationService) as NotificationManager;
+            manager.CancelAll();
+        }
+
+        public void RemoveNotification(int id)
+        {
+            NotificationManager manager = Application.Context.GetSystemService(Context.NotificationService) as NotificationManager;
+            manager.Cancel(id);
+        }
+
+        public void RemoveNotification(string tag, int id)
+        {
+            if (string.IsNullOrEmpty(tag))
+            {
+                RemoveNotification(id);
+            }
+            else
+            {
+                NotificationManager manager = Application.Context.GetSystemService(Context.NotificationService) as NotificationManager;
+                manager.Cancel(tag, id);
+            }
         }
 
         #endregion

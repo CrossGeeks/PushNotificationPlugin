@@ -17,6 +17,12 @@ namespace Plugin.PushNotification
         static NotificationResponse delayedNotificationResponse = null;
         const string TokenKey = "Token";
 
+        NSString NotificationIdKey = new NSString("id");
+        NSString ApsNotificationIdKey = new NSString("aps.id");
+
+        NSString NotificationTagKey = new NSString("tag");
+        NSString ApsNotificationTagKey = new NSString("aps.tag");
+
         public Func<string> RetrieveSavedToken { get; set; } = InternalRetrieveSavedToken;
         public Action<string> SaveToken { get; set; } = InternalSaveToken;
 
@@ -405,6 +411,75 @@ namespace Plugin.PushNotification
             }
 
             return parameters;
+        }
+
+        public void ClearAllNotifications()
+        {
+            if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+            {
+                UNUserNotificationCenter.Current.RemoveAllDeliveredNotifications();
+            }
+            else
+            {
+                UIApplication.SharedApplication.CancelAllLocalNotifications();
+            }
+        }
+
+        public async void RemoveNotification(int id)
+        {
+            if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+            {
+              
+                var deliveredNotifications = await UNUserNotificationCenter.Current.GetDeliveredNotificationsAsync();
+                var deliveredNotificationsMatches = deliveredNotifications.Where(u => (u.Request.Content.UserInfo.ContainsKey(NotificationIdKey) && $"{u.Request.Content.UserInfo[NotificationIdKey]}".Equals($"{id}")) || (u.Request.Content.UserInfo.ContainsKey(ApsNotificationIdKey) && u.Request.Content.UserInfo[ApsNotificationIdKey].Equals($"{id}"))).Select(s => s.Request.Identifier).ToArray();
+                if (deliveredNotificationsMatches.Length > 0)
+                {
+                    UNUserNotificationCenter.Current.RemoveDeliveredNotifications(deliveredNotificationsMatches);
+
+                }
+            }
+            else
+            {
+                var scheduledNotifications = UIApplication.SharedApplication.ScheduledLocalNotifications.Where(u => (u.UserInfo.ContainsKey(NotificationIdKey) && u.UserInfo[NotificationIdKey].Equals($"{id}")) || (u.UserInfo.ContainsKey(ApsNotificationIdKey) && u.UserInfo[ApsNotificationIdKey].Equals($"{id}")));
+                foreach (var notification in scheduledNotifications)
+                {
+                    UIApplication.SharedApplication.CancelLocalNotification(notification);
+                }
+
+            }
+        }
+
+        public async void RemoveNotification(string tag, int id)
+        {
+            if (string.IsNullOrEmpty(tag))
+            {
+                RemoveNotification(id);
+            }
+            else
+            {
+                if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
+                {
+
+                    var deliveredNotifications = await UNUserNotificationCenter.Current.GetDeliveredNotificationsAsync();
+                    var deliveredNotificationsMatches = deliveredNotifications.Where(u => (u.Request.Content.UserInfo.ContainsKey(NotificationIdKey) && $"{u.Request.Content.UserInfo[NotificationIdKey]}".Equals($"{id}") && u.Request.Content.UserInfo.ContainsKey(NotificationTagKey) && u.Request.Content.UserInfo[NotificationTagKey].Equals(tag)) || (u.Request.Content.UserInfo.ContainsKey(ApsNotificationIdKey) && u.Request.Content.UserInfo[ApsNotificationIdKey].Equals($"{id}") && u.Request.Content.UserInfo.ContainsKey(ApsNotificationTagKey) && u.Request.Content.UserInfo[ApsNotificationTagKey].Equals(tag))).Select(s => s.Request.Identifier).ToArray();
+                    if (deliveredNotificationsMatches.Length > 0)
+                    {
+                        UNUserNotificationCenter.Current.RemoveDeliveredNotifications(deliveredNotificationsMatches);
+
+                    }
+                }
+                else
+                {
+                    var scheduledNotifications = UIApplication.SharedApplication.ScheduledLocalNotifications.Where(u => (u.UserInfo.ContainsKey(NotificationIdKey) && u.UserInfo[NotificationIdKey].Equals($"{id}") && u.UserInfo.ContainsKey(NotificationTagKey) && u.UserInfo[NotificationIdKey].Equals(tag)) || (u.UserInfo.ContainsKey(ApsNotificationIdKey) && u.UserInfo[ApsNotificationIdKey].Equals($"{id}") && u.UserInfo.ContainsKey(ApsNotificationTagKey) && u.UserInfo[ApsNotificationIdKey].Equals($"{tag}")));
+                    foreach (var notification in scheduledNotifications)
+                    {
+                        UIApplication.SharedApplication.CancelLocalNotification(notification);
+                    }
+
+                }
+            }
+                
+           
         }
     }
 }

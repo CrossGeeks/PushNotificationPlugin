@@ -44,6 +44,9 @@ By using the default push notification handler. There are a few things you can c
     
 	//Sets the default notification channel name for Android O
     public static string DefaultNotificationChannelName { get; set; } = "General";
+    
+    //Sets the default notification channel importance for Android O
+    public static NotificationImportance DefaultNotificationChannelImportance { get; set; } = NotificationImportance.Default;
 
 ```
 
@@ -214,10 +217,59 @@ Payload sample with icon and sound
 
 If icon not set will set the **PushNotificationManager.IconResource** value if not set either will use the default application icon.
 
+#####  Notification Large Icon
+
+* You can send the large_icon to be displayed on the notification by using **large_icon** key, an icon with the value set should be in your *Resources/drawable* folder.
+
+Payload sample with large icon
+
+```json
+{
+   "data" : {
+     "title": "hello",
+     "body": "world",
+     "priority":"high",
+     "large_icon":"test"
+  }
+}
+```
+
+Payload sample with large icon and sound
+
+```json
+{
+   "data" : {
+     "title": "hello",
+     "body": "world",
+     "priority":"high",
+     "large_icon":"test",
+     "sound":"test"
+  }
+}
+```
+
+If large icon not set will set the **PushNotificationManager.LargeIconResource** value.
 
 #####  Notification Actions
 
 * For notification with actions will look for **click_action** key value as the match. More information here:  [Notification Actions](NotificationActions.md)
+
+#####  Notification Channel Id
+
+* **channel_id** key is set as the notification channel id if present will use that specified notification channel for this notification.
+
+ Payload sample with id and tag
+
+```json
+{
+   "data" : {
+     "title": "hello",
+     "body": "firebase",
+     "channel_id" : "PushNotificationChannel"
+
+  }
+}
+```
 
 <= Back to [Table of Contents](../README.md)
 

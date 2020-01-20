@@ -170,5 +170,20 @@ namespace Plugin.PushNotification
         /// Get all user notification categories
         /// </summary>
         NotificationUserCategory[] GetUserNotificationCategories();
+
+        /// <summary>
+        /// Clear all notifications
+        /// </summary>
+        void ClearAllNotifications();
+
+        /// <summary>
+        /// Remove specific id notification
+        /// </summary>
+        void RemoveNotification(int id);
+
+        /// <summary>
+        /// Remove specific id and tag notification
+        /// </summary>
+        void RemoveNotification(string tag, int id);
     }
 }

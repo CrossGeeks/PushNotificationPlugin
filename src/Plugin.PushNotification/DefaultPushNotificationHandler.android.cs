@@ -92,6 +92,11 @@ namespace Plugin.PushNotification
         public const string IconKey = "icon";
 
         /// <summary>
+        /// Large Icon
+        /// </summary>
+        public const string LargeIconKey = "large_icon";
+
+        /// <summary>
         /// Sound
         /// </summary>
         public const string SoundKey = "sound";
@@ -253,6 +258,31 @@ namespace Plugin.PushNotification
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
 
+
+            try
+            {
+                if (parameters.TryGetValue(LargeIconKey, out object largeIcon) && largeIcon != null)
+                {
+                    PushNotificationManager.LargeIconResource = context.Resources.GetIdentifier($"{largeIcon}", "drawable", Application.Context.PackageName);
+                    if (PushNotificationManager.LargeIconResource == 0)
+                    {
+                        PushNotificationManager.LargeIconResource = context.Resources.GetIdentifier($"{largeIcon}", "mipmap", Application.Context.PackageName);
+                    }
+                }
+
+                if (PushNotificationManager.LargeIconResource > 0)
+                {
+                    string name = context.Resources.GetResourceName(PushNotificationManager.LargeIconResource);
+                    if (name == null)
+                        PushNotificationManager.LargeIconResource = 0;
+                }
+            }
+            catch (Resources.NotFoundException ex)
+            {
+                PushNotificationManager.LargeIconResource = 0;
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+            }
+
             if (parameters.TryGetValue(ColorKey, out var color) && color != null)
             {
                 try
@@ -298,6 +328,13 @@ namespace Plugin.PushNotification
                 .SetContentText(message)
                 .SetAutoCancel(true)
                 .SetContentIntent(pendingIntent);
+
+
+            if (PushNotificationManager.LargeIconResource > 0)
+            {
+                Bitmap largeIconBitmap = BitmapFactory.DecodeResource(context.Resources, PushNotificationManager.LargeIconResource);
+                notificationBuilder.SetLargeIcon(largeIconBitmap);
+            }
 
             if (parameters.TryGetValue(FullScreenIntentKey, out var fullScreenIntent) && ($"{fullScreenIntent}" == "true" || $"{fullScreenIntent}" == "1"))
             {
