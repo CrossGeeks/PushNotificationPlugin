@@ -276,7 +276,7 @@ If large icon not set will set the **PushNotificationManager.LargeIconResource**
 
 #####  Notification Show When
 
-* **show_when** key is set to false will not show the notification timestamp, otherwise will show it
+* **show_when** key if set to false will not show the notification timestamp, otherwise will show it
 
  Payload sample without timestamp
 
