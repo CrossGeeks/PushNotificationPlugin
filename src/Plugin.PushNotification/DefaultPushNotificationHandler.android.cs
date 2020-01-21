@@ -142,7 +142,6 @@ namespace Plugin.PushNotification
             var title = context.ApplicationInfo.LoadLabel(context.PackageManager);
             var message = string.Empty;
             var tag = string.Empty;
-            var showWhen = true;
 
             if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTextKey) && parameters.TryGetValue(PushNotificationManager.NotificationContentTextKey, out var notificationContentText))
             {
@@ -201,7 +200,7 @@ namespace Plugin.PushNotification
 
             if (parameters.TryGetValue(ShowWhenKey, out var shouldShowWhen) && $"{shouldShowWhen}" == "false")
             {
-                showWhen = false;
+                PushNotificationManager.ShouldShowWhen = false;
             }
 
             if (parameters.TryGetValue(TagKey, out var tagContent))
@@ -340,10 +339,13 @@ namespace Plugin.PushNotification
                 .SetContentTitle(title)
                 .SetContentText(message)
                 .SetAutoCancel(true)
-                .SetShowWhen(showWhen)
                 .SetWhen(Java.Lang.JavaSystem.CurrentTimeMillis())
                 .SetContentIntent(pendingIntent);
 
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBeanMr1)
+            {
+                notificationBuilder.SetShowWhen(PushNotificationManager.ShouldShowWhen);
+            }
 
             if (PushNotificationManager.LargeIconResource > 0)
             {
