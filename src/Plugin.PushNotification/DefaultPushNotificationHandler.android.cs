@@ -9,6 +9,7 @@ using Android.Media;
 using Android.OS;
 using Android.Support.V4.App;
 using Java.Util;
+using static Android.App.ActivityManager;
 
 namespace Plugin.PushNotification
 {
@@ -125,7 +126,7 @@ namespace Plugin.PushNotification
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnReceived");
 
-            if (parameters.TryGetValue(SilentKey, out var silent) && (silent.ToString() == "true" || silent.ToString() == "1"))
+            if ((parameters.TryGetValue(SilentKey, out var silent) && (silent.ToString() == "true" || silent.ToString() == "1")) || (IsInForeground() && (!(parameters.TryGetValue(PriorityKey, out var imp) && ($"{imp}" == "high" || $"{imp}" == "max")) || (PushNotificationManager.DefaultNotificationChannelImportance != NotificationImportance.High && PushNotificationManager.DefaultNotificationChannelImportance != NotificationImportance.Max))))
             {
                 return;
             }
@@ -529,5 +530,17 @@ namespace Plugin.PushNotification
         /// <param name="notificationBuilder">Notification builder.</param>
         /// <param name="parameters">Notification parameters.</param>
         public virtual void OnBuildNotification(NotificationCompat.Builder notificationBuilder, IDictionary<string, object> parameters) { }
+
+
+        bool IsInForeground()
+        {
+            bool isInForeground;
+
+            RunningAppProcessInfo myProcess = new RunningAppProcessInfo();
+            ActivityManager.GetMyMemoryState(myProcess);
+            isInForeground = myProcess.Importance == Android.App.Importance.Foreground;
+
+            return isInForeground;
+        }
     }
 }
