@@ -36,13 +36,13 @@ By using the default push notification handler. There are a few things you can c
     //Sets the sound  uri will be used for the notification
     public static Android.Net.Uri SoundUri { get; set; }
 
-	//Sets the color will be used for the notification
+    //Sets the color will be used for the notification
     public static Color? Color { get; set; }
 
-	//Sets the default notification channel id for Android O
-	public static string DefaultNotificationChannelId { get; set; } = "PushNotificationChannel";
+    //Sets the default notification channel id for Android O
+    public static string DefaultNotificationChannelId { get; set; } = "PushNotificationChannel";
     
-	//Sets the default notification channel name for Android O
+    //Sets the default notification channel name for Android O
     public static string DefaultNotificationChannelName { get; set; } = "General";
     
     //Sets the default notification channel importance for Android O
@@ -77,7 +77,10 @@ There are also some keys you can set on the payload:
 * **priority** : Sets the notification priority
 * **sound** : Sets the notification sound
 * **icon** : Sets the notification icon
+* **large_icon** : Sets the notification large icon
 * **click_action** : Sets name for the notification action
+* **channel_id** : Sets id for the notification channel that will be used when notification is delivered
+* **show_when** : Indicates if the notification timestamp will be shown.
 
 If **sound** or **icon** keys present have priority over the **PushNotificationManager.SoundUri** and **PushNotificationManager.IconResource** static customization properties mentioned above.
 
@@ -258,7 +261,7 @@ If large icon not set will set the **PushNotificationManager.LargeIconResource**
 
 * **channel_id** key is set as the notification channel id if present will use that specified notification channel for this notification.
 
- Payload sample with id and tag
+ Payload sample with channel id
 
 ```json
 {
@@ -266,6 +269,23 @@ If large icon not set will set the **PushNotificationManager.LargeIconResource**
      "title": "hello",
      "body": "firebase",
      "channel_id" : "PushNotificationChannel"
+
+  }
+}
+```
+
+#####  Notification Show When
+
+* **show_when** key is set to false will not show the notification timestamp, otherwise will show it
+
+ Payload sample without timestamp
+
+```json
+{
+   "data" : {
+     "title": "hello",
+     "body": "firebase",
+     "show_when" : "false"
 
   }
 }
