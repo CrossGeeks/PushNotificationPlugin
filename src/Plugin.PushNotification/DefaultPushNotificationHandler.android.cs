@@ -117,6 +117,11 @@ namespace Plugin.PushNotification
         /// </summary>
         public const string FullScreenIntentKey = "full_screen_intent";
 
+        /// <summary>
+        /// Show Timestamp Key
+        /// </summary>
+        public const string ShowWhenKey = "show_when";
+
         public virtual void OnOpened(NotificationResponse response)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
@@ -137,6 +142,7 @@ namespace Plugin.PushNotification
             var title = context.ApplicationInfo.LoadLabel(context.PackageManager);
             var message = string.Empty;
             var tag = string.Empty;
+            var showWhen = true;
 
             if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTextKey) && parameters.TryGetValue(PushNotificationManager.NotificationContentTextKey, out var notificationContentText))
             {
@@ -190,6 +196,12 @@ namespace Plugin.PushNotification
                     // Keep the default value of zero for the notify_id, but log the conversion problem.
                     System.Diagnostics.Debug.WriteLine($"Failed to convert {id} to an integer {ex}");
                 }
+            }
+
+
+            if (parameters.TryGetValue(ShowWhenKey, out var shouldShowWhen) && $"{shouldShowWhen}" == "false")
+            {
+                showWhen = false;
             }
 
             if (parameters.TryGetValue(TagKey, out var tagContent))
@@ -328,6 +340,8 @@ namespace Plugin.PushNotification
                 .SetContentTitle(title)
                 .SetContentText(message)
                 .SetAutoCancel(true)
+                .SetShowWhen(showWhen)
+                .SetWhen(Java.Lang.JavaSystem.CurrentTimeMillis())
                 .SetContentIntent(pendingIntent);
 
 
