@@ -27,10 +27,7 @@
     <Title>Push Notification Plugin for Xamarin</Title>
     <Summary>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Summary>
     <Description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Description>
-    <PackageReleaseNotes>
-[Update] Bumped up Xamarin.Firebase.Messaging to &gt;= 60.1142.1
-[Fix] iOS 13 fix
-[Add] Add delegates for SaveToken and RetrieveSavedToken to the interface with internal default storage methods</PackageReleaseNotes>
+    <PackageReleaseNotes>Android token registration error handling</PackageReleaseNotes>
     <Owners>crossgeeks,rdelrosario</Owners>
     <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
     <Copyright>Copyright 2017 CrossGeeks</Copyright>
