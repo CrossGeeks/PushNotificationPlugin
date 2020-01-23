@@ -179,7 +179,18 @@ namespace Plugin.PushNotification
         {
             _tokenTcs = new TaskCompletionSource<string>();
             FirebaseInstanceId.Instance.GetInstanceId().AddOnCompleteListener(this);
-            return await _tokenTcs.Task;
+            string retVal = null;
+
+            try
+            {
+                retVal = await _tokenTcs.Task;
+            }
+            catch(Exception ex)
+            {
+                _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.RegistrationFailed, $"{ex}"));
+            }
+
+            return retVal;
         }
 
         public void UnregisterForPushNotifications()
@@ -361,8 +372,24 @@ namespace Plugin.PushNotification
 
         public void OnComplete(Android.Gms.Tasks.Task task)
         {
-            string token = task.Result.JavaCast<IInstanceIdResult>().Token;
-            _tokenTcs?.TrySetResult(token);
+            try
+            {
+                if (task.IsSuccessful)
+                {
+                    string token = task.Result.JavaCast<IInstanceIdResult>().Token;
+                    _tokenTcs?.TrySetResult(token);
+                }
+                else
+                {
+                    _tokenTcs?.TrySetException(task.Exception);
+                }
+
+            }catch(Exception ex)
+            {
+                _tokenTcs?.TrySetException(ex);
+            }
+            
+
         }
 
         public void ClearAllNotifications()
