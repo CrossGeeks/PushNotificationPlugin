@@ -361,8 +361,12 @@ namespace Plugin.PushNotification
 
         public void OnComplete(Android.Gms.Tasks.Task task)
         {
-            string token = task.Result.JavaCast<IInstanceIdResult>().Token;
-            _tokenTcs?.TrySetResult(token);
+            try
+            {
+                string token = task.Result.JavaCast<IInstanceIdResult>().Token;
+                _tokenTcs?.TrySetResult(token);
+            }
+            catch { }            
         }
 
         public void ClearAllNotifications()

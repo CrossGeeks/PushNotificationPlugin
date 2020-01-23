@@ -35,6 +35,7 @@
     <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
     <Copyright>Copyright 2017 CrossGeeks</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageVersion>3.0.25-custom</PackageVersion>
   </PropertyGroup>
 
     <!-- Define what happens on build and release -->
