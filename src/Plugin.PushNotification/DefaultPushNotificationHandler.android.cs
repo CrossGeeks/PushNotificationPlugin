@@ -122,6 +122,11 @@ namespace Plugin.PushNotification
         /// </summary>
         public const string ShowWhenKey = "show_when";
 
+        /// <summary>
+        /// Number
+        /// </summary>
+        public const string NumberKey = "number";
+
         public virtual void OnOpened(NotificationResponse response)
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
@@ -142,6 +147,8 @@ namespace Plugin.PushNotification
             var title = context.ApplicationInfo.LoadLabel(context.PackageManager);
             var message = string.Empty;
             var tag = string.Empty;
+            var notificationNumber = 0;
+            var showWhenVisible = PushNotificationManager.ShouldShowWhen;
 
             if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTextKey) && parameters.TryGetValue(PushNotificationManager.NotificationContentTextKey, out var notificationContentText))
             {
@@ -197,11 +204,23 @@ namespace Plugin.PushNotification
                 }
             }
 
-
-            if (parameters.TryGetValue(ShowWhenKey, out var shouldShowWhen) && $"{shouldShowWhen}" == "false")
+            if (parameters.TryGetValue(NumberKey, out var num))
             {
-                PushNotificationManager.ShouldShowWhen = false;
+                try
+                {
+                    notificationNumber = Convert.ToInt32(num);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to convert {num} to an integer {ex}");
+                }
             }
+
+            if (parameters.TryGetValue(ShowWhenKey, out var shouldShowWhen))
+            {
+                showWhenVisible = $"{shouldShowWhen}".ToLower() == "true";
+            }
+            
 
             if (parameters.TryGetValue(TagKey, out var tagContent))
             {
@@ -342,9 +361,14 @@ namespace Plugin.PushNotification
                 .SetWhen(Java.Lang.JavaSystem.CurrentTimeMillis())
                 .SetContentIntent(pendingIntent);
 
+            if(notificationNumber>0)
+            {
+                notificationBuilder.SetNumber(notificationNumber);
+            }
+
             if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBeanMr1)
             {
-                notificationBuilder.SetShowWhen(PushNotificationManager.ShouldShowWhen);
+                notificationBuilder.SetShowWhen(showWhenVisible);
             }
 
             if (PushNotificationManager.LargeIconResource > 0)
