@@ -149,6 +149,11 @@ namespace Plugin.PushNotification
             var tag = string.Empty;
             var notificationNumber = 0;
             var showWhenVisible = PushNotificationManager.ShouldShowWhen;
+            var soundUri = PushNotificationManager.SoundUri;
+            var largeIconResource = PushNotificationManager.LargeIconResource;
+            var smallIconResource = PushNotificationManager.IconResource;
+            var notificationColor = PushNotificationManager.Color;
+            var chanId = PushNotificationManager.DefaultNotificationChannelId;
 
             if (!string.IsNullOrEmpty(PushNotificationManager.NotificationContentTextKey) && parameters.TryGetValue(PushNotificationManager.NotificationContentTextKey, out var notificationContentText))
             {
@@ -239,7 +244,7 @@ namespace Plugin.PushNotification
                         soundResId = context.Resources.GetIdentifier(soundName, "raw", context.PackageName);
                     }
 
-                    PushNotificationManager.SoundUri = new Android.Net.Uri.Builder()
+                    soundUri = new Android.Net.Uri.Builder()
                               .Scheme(ContentResolver.SchemeAndroidResource)
                               .Path($"{context.PackageName}/{soundResId}")
                               .Build();
@@ -254,9 +259,9 @@ namespace Plugin.PushNotification
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
 
-            if (PushNotificationManager.SoundUri == null)
+            if (soundUri == null)
             {
-                PushNotificationManager.SoundUri = RingtoneManager.GetDefaultUri(RingtoneType.Notification);
+                soundUri = RingtoneManager.GetDefaultUri(RingtoneType.Notification);
             }
             try
             {
@@ -264,7 +269,7 @@ namespace Plugin.PushNotification
                 {
                     try
                     {
-                        PushNotificationManager.IconResource = context.Resources.GetIdentifier(icon.ToString(), "drawable", Application.Context.PackageName);
+                        smallIconResource = context.Resources.GetIdentifier(icon.ToString(), "drawable", Application.Context.PackageName);
                     }
                     catch (Resources.NotFoundException ex)
                     {
@@ -272,20 +277,20 @@ namespace Plugin.PushNotification
                     }
                 }
 
-                if (PushNotificationManager.IconResource == 0)
-                    PushNotificationManager.IconResource = context.ApplicationInfo.Icon;
+                if (smallIconResource == 0)
+                    smallIconResource = context.ApplicationInfo.Icon;
                 else
                 {
-                    var name = context.Resources.GetResourceName(PushNotificationManager.IconResource);
+                    var name = context.Resources.GetResourceName(smallIconResource);
                     if (name == null)
                     {
-                        PushNotificationManager.IconResource = context.ApplicationInfo.Icon;
+                        smallIconResource = context.ApplicationInfo.Icon;
                     }
                 }
             }
             catch (Resources.NotFoundException ex)
             {
-                PushNotificationManager.IconResource = context.ApplicationInfo.Icon;
+                smallIconResource = context.ApplicationInfo.Icon;
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
 
@@ -294,23 +299,23 @@ namespace Plugin.PushNotification
             {
                 if (parameters.TryGetValue(LargeIconKey, out object largeIcon) && largeIcon != null)
                 {
-                    PushNotificationManager.LargeIconResource = context.Resources.GetIdentifier($"{largeIcon}", "drawable", Application.Context.PackageName);
-                    if (PushNotificationManager.LargeIconResource == 0)
+                    largeIconResource = context.Resources.GetIdentifier($"{largeIcon}", "drawable", Application.Context.PackageName);
+                    if (largeIconResource == 0)
                     {
-                        PushNotificationManager.LargeIconResource = context.Resources.GetIdentifier($"{largeIcon}", "mipmap", Application.Context.PackageName);
+                        largeIconResource = context.Resources.GetIdentifier($"{largeIcon}", "mipmap", Application.Context.PackageName);
                     }
                 }
 
-                if (PushNotificationManager.LargeIconResource > 0)
+                if (largeIconResource > 0)
                 {
-                    string name = context.Resources.GetResourceName(PushNotificationManager.LargeIconResource);
+                    string name = context.Resources.GetResourceName(largeIconResource);
                     if (name == null)
-                        PushNotificationManager.LargeIconResource = 0;
+                        largeIconResource = 0;
                 }
             }
             catch (Resources.NotFoundException ex)
             {
-                PushNotificationManager.LargeIconResource = 0;
+                largeIconResource = 0;
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
 
@@ -318,7 +323,7 @@ namespace Plugin.PushNotification
             {
                 try
                 {
-                    PushNotificationManager.Color = Color.ParseColor(color.ToString());
+                    notificationColor = Color.ParseColor(color.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -346,15 +351,13 @@ namespace Plugin.PushNotification
             var requestCode = new Java.Util.Random().NextInt();
             var pendingIntent = PendingIntent.GetActivity(context, requestCode, resultIntent, PendingIntentFlags.UpdateCurrent);
 
-       
-            var chanId = PushNotificationManager.DefaultNotificationChannelId;
             if (parameters.TryGetValue(ChannelIdKey, out var channelId) && channelId != null)
             {
                 chanId = $"{channelId}";
             }
 
             var notificationBuilder = new NotificationCompat.Builder(context, chanId)
-                .SetSmallIcon(PushNotificationManager.IconResource)
+                .SetSmallIcon(smallIconResource)
                 .SetContentTitle(title)
                 .SetContentText(message)
                 .SetAutoCancel(true)
@@ -371,9 +374,9 @@ namespace Plugin.PushNotification
                 notificationBuilder.SetShowWhen(showWhenVisible);
             }
 
-            if (PushNotificationManager.LargeIconResource > 0)
+            if (largeIconResource > 0)
             {
-                Bitmap largeIconBitmap = BitmapFactory.DecodeResource(context.Resources, PushNotificationManager.LargeIconResource);
+                Bitmap largeIconBitmap = BitmapFactory.DecodeResource(context.Resources, largeIconResource);
                 notificationBuilder.SetLargeIcon(largeIconBitmap);
             }
 
@@ -434,7 +437,7 @@ namespace Plugin.PushNotification
 
                 try
                 {
-                    notificationBuilder.SetSound(PushNotificationManager.SoundUri);
+                    notificationBuilder.SetSound(soundUri);
                 }
                 catch (Exception ex)
                 {
@@ -445,8 +448,8 @@ namespace Plugin.PushNotification
             // Try to resolve (and apply) localized parameters
             ResolveLocalizedParameters(notificationBuilder, parameters);
 
-            if (PushNotificationManager.Color != null)
-                notificationBuilder.SetColor(PushNotificationManager.Color.Value);
+            if (notificationColor != null)
+                notificationBuilder.SetColor(notificationColor.Value);
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBean)
             {
