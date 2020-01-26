@@ -270,6 +270,10 @@ namespace Plugin.PushNotification
                     try
                     {
                         smallIconResource = context.Resources.GetIdentifier(icon.ToString(), "drawable", Application.Context.PackageName);
+                        if (smallIconResource == 0)
+                        {
+                            smallIconResource = context.Resources.GetIdentifier($"{icon}", "mipmap", Application.Context.PackageName);
+                        }
                     }
                     catch (Resources.NotFoundException ex)
                     {

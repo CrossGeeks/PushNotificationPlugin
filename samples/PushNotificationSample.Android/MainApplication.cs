@@ -35,7 +35,7 @@ namespace PushNotificationSample.Droid
             PushNotificationManager.Initialize(this, false);
 #endif
 
-           
+            PushNotificationManager.IconResource = Resource.Drawable.android;
 
             //Handle notification when app is closed here
             CrossPushNotification.Current.OnNotificationReceived += (s, p) =>
