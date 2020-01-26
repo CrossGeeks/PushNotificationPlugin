@@ -18,13 +18,6 @@ namespace PushNotificationSample.Droid
         {
             base.OnCreate();
 
-            //If debug you should reset the token each time.
-#if DEBUG
-            PushNotificationManager.Initialize(this, true);
-#else
-            PushNotificationManager.Initialize(this, false);
-#endif
-
             //Set the default notification channel for your app when running Android Oreo
             if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O)
             {
@@ -34,6 +27,15 @@ namespace PushNotificationSample.Droid
                 //Change for your default notification channel name here
                 PushNotificationManager.DefaultNotificationChannelName = "General";
             }
+
+            //If debug you should reset the token each time.
+#if DEBUG
+            PushNotificationManager.Initialize(this,new MyDefaultPushNotificationHandler(), true);
+#else
+            PushNotificationManager.Initialize(this,new MyDefaultPushNotificationHandler(), false);
+#endif
+
+           
 
             //Handle notification when app is closed here
             CrossPushNotification.Current.OnNotificationReceived += (s, p) =>
