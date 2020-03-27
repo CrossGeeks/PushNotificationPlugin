@@ -22,11 +22,11 @@ You should initialize the plugin on an Android Application class if you don't ha
 
 There are 3 overrides to **PushNotificationManager.Initialize**:
 
-- **PushNotificationManager.Initialize(Context context, bool resetToken,bool createDefaultNotificationChannel, bool autoRegistration)** : Default method to initialize plugin without supporting any user notification categories. Uses a DefaultPushHandler to provide the ui for the notification.
+- **PushNotificationManager.Initialize(Context context, bool resetToken,bool createNotificationChannel, bool autoRegistration)** : Default method to initialize plugin without supporting any user notification categories. Uses a DefaultPushHandler to provide the ui for the notification.
 
-- **PushNotificationManager.Initialize(Context context, NotificationUserCategory[] categories, bool resetToken,bool createDefaultNotificationChannel, bool autoRegistration)**  : Initializes plugin using user notification categories. Uses a DefaultPushHandler to provide the ui for the notification supporting buttons based on the action_click send on the notification
+- **PushNotificationManager.Initialize(Context context, NotificationUserCategory[] categories, bool resetToken,bool createNotificationChannel, bool autoRegistration)**  : Initializes plugin using user notification categories. Uses a DefaultPushHandler to provide the ui for the notification supporting buttons based on the action_click send on the notification
 
-- **PushNotificationManager.Initialize(Context context,IPushNotificationHandler pushHandler, bool resetToken,bool createDefaultNotificationChannel, bool autoRegistration)** : Initializes the plugin using a custom push notification handler to provide custom ui and behaviour notifications receipt and opening.
+- **PushNotificationManager.Initialize(Context context,IPushNotificationHandler pushHandler, bool resetToken,bool createNotificationChannel, bool autoRegistration)** : Initializes the plugin using a custom push notification handler to provide custom ui and behaviour notifications receipt and opening.
 
 
 **Important: While debugging set resetToken parameter to true.**
@@ -49,12 +49,30 @@ Example of initialization:
 	    //Set the default notification channel for your app when running Android Oreo
             if (Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O)
             {
+                /*
+                 * For a single Notification channel
+                 */
                 //Change for your default notification channel id here
                 PushNotificationManager.DefaultNotificationChannelId = "DefaultChannel";
 
                 //Change for your default notification channel name here
                 PushNotificationManager.DefaultNotificationChannelName = "General";
+
+                /*
+                 * Or to work with multiple notification channels
+                 * e.g. to enable multiple importance level messages or different notification sounds...etc
+                 * Note: Once NotificationChannels contains at least one element, DefaultNotificationChannelId, DefaultNotificationChannelName, 
+                 * and DefaultNotificationChannelImportanceLevel are ignored.
+                 */
+                PushNotificationManager.NotificationChannels = new List<NotificationChannelProps>()
+                {
+                    new NotificationChannelProps("infoMessagesId", "Informations"),
+                    new NotificationChannelProps("warningMessagesId", "Warnings", NotificationImportance.High),
+                    new NotificationChannelProps("reminderMessagesId", "Reminders", NotificationImportance.Min)
+                };
+
             }
+
             
             //If debug you should reset the token each time.
             #if DEBUG
