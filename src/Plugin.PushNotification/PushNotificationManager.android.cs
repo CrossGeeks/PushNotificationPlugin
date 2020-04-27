@@ -39,14 +39,29 @@ namespace Plugin.PushNotification
         public static Color? Color { get; set; }
         public static Type NotificationActivityType { get; set; }
         public static ActivityFlags? NotificationActivityFlags { get; set; } = ActivityFlags.ClearTop | ActivityFlags.SingleTop;
+
+        /// <summary>
+        /// to work with a singe notification channel
+        /// </summary>
         public static string DefaultNotificationChannelId { get; set; } = "PushNotificationChannel";
+
+        /// <summary>
+        /// to work with a singe notification channel
+        /// </summary>
         public static string DefaultNotificationChannelName { get; set; } = "General";
+
         public static NotificationImportance DefaultNotificationChannelImportance { get; set; } = NotificationImportance.Default;
+
+        /// <summary>
+        /// to work with a singe notification channels
+        /// </summary>
+        public static List<NotificationChannelProps> NotificationChannels { get; set; }
+
         static TaskCompletionSource<string> _tokenTcs;
         internal static Type DefaultNotificationActivityType { get; set; } = null;
 
         static Context _context;
-        
+
         public static void ProcessIntent(Activity activity, Intent intent, bool enableDelayedResponse = true)
         {
             DefaultNotificationActivityType = activity.GetType();
@@ -84,7 +99,7 @@ namespace Plugin.PushNotification
             }
         }
 
-        public static void Initialize(Context context, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
+        public static void Initialize(Context context, bool resetToken, bool createNotificationChannel = true, bool autoRegistration = true)
         {
             _context = context;
 
@@ -126,46 +141,61 @@ namespace Plugin.PushNotification
                 });
             }
 
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O && createDefaultNotificationChannel)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O && createNotificationChannel)
             {
-                // Create channel to show notifications.
-                var channelId = DefaultNotificationChannelId;
-                var channelName = DefaultNotificationChannelName;
-                var notificationManager = (NotificationManager)context.GetSystemService(Context.NotificationService);
-                var notChannel = new NotificationChannel(channelId,
-                    channelName, DefaultNotificationChannelImportance);
-                
-                if(SoundUri !=null)
+                if (NotificationChannels == null || NotificationChannels.Count() == 0)
                 {
-                    try
+                    NotificationChannels = new List<NotificationChannelProps>()
                     {
-                        var soundAttributes = new AudioAttributes.Builder()
-                                             .SetContentType(AudioContentType.Sonification)
-                                             .SetUsage(AudioUsageKind.Notification).Build();
-
-                        notChannel.SetSound(SoundUri, soundAttributes);
-
-                    }catch(Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex);
-                    }
-                 
+                        new NotificationChannelProps(DefaultNotificationChannelId,
+                                         DefaultNotificationChannelName,
+                                         DefaultNotificationChannelImportance)
+                    };
                 }
-               
-                notificationManager.CreateNotificationChannel(notChannel);
+
+                foreach (NotificationChannelProps channel in NotificationChannels)
+                {
+                    // Create channel to show notifications.
+                    var channelId = channel.NotificationChannelId;
+                    var channelName = channel.NotificationChannelName;
+                    var channelImportance = channel.NotificationChannelImportance;
+                    var notificationManager = (NotificationManager)context.GetSystemService(Context.NotificationService);
+                    var notChannel = new NotificationChannel(channelId, channelName, channelImportance);
+
+                    if (SoundUri != null)
+                    {
+                        try
+                        {
+                            var soundAttributes = new AudioAttributes.Builder()
+                                                 .SetContentType(AudioContentType.Sonification)
+                                                 .SetUsage(AudioUsageKind.Notification).Build();
+
+                            notChannel.SetSound(SoundUri, soundAttributes);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine(ex);
+                        }
+
+                    }
+
+                    notificationManager.CreateNotificationChannel(notChannel);
+                }
             }
             System.Diagnostics.Debug.WriteLine(CrossPushNotification.Current.Token);
         }
-        public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
+
+        public static void Initialize(Context context, NotificationUserCategory[] notificationCategories, bool resetToken, bool createNotificationChannel = true, bool autoRegistration = true)
         {
-            Initialize(context, resetToken, createDefaultNotificationChannel, autoRegistration);
+            Initialize(context, resetToken, createNotificationChannel, autoRegistration);
             RegisterUserNotificationCategories(notificationCategories);
         }
 
         public void RegisterForPushNotifications()
         {
             FirebaseMessaging.Instance.AutoInitEnabled = true;
-            System.Threading.Tasks.Task.Run(async() =>
+            System.Threading.Tasks.Task.Run(async () =>
             {
                 var token = await GetTokenAsync();
                 if (!string.IsNullOrEmpty(token))
@@ -185,7 +215,7 @@ namespace Plugin.PushNotification
             {
                 retVal = await _tokenTcs.Task;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.RegistrationFailed, $"{ex}"));
             }
@@ -221,10 +251,10 @@ namespace Plugin.PushNotification
         }
 
 
-        public static void Initialize(Context context, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createDefaultNotificationChannel = true, bool autoRegistration = true)
+        public static void Initialize(Context context, IPushNotificationHandler pushNotificationHandler, bool resetToken, bool createNotificationChannel = true, bool autoRegistration = true)
         {
             CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
-            Initialize(context, resetToken, createDefaultNotificationChannel, autoRegistration);
+            Initialize(context, resetToken, createNotificationChannel, autoRegistration);
         }
 
         public static void ClearUserNotificationCategories()
@@ -384,11 +414,12 @@ namespace Plugin.PushNotification
                     _tokenTcs?.TrySetException(task.Exception);
                 }
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 _tokenTcs?.TrySetException(ex);
             }
-            
+
 
         }
 
@@ -419,4 +450,6 @@ namespace Plugin.PushNotification
 
         #endregion
     }
+
+
 }
