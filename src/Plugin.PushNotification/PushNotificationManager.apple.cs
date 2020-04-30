@@ -135,14 +135,14 @@ namespace Plugin.PushNotification
         {
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
 
-            if (options?.ContainsKey(UIApplication.LaunchOptionsRemoteNotificationKey)??false)
+            if (options?.ContainsKey(UIApplication.LaunchOptionsRemoteNotificationKey) ?? false)
             {
                 var pushPayload = options[UIApplication.LaunchOptionsRemoteNotificationKey] as NSDictionary;
                 if (pushPayload != null)
                 {
                     var parameters = GetParameters(pushPayload);
 
-                    var notificationResponse = new NotificationResponse(parameters,string.Empty, NotificationCategoryType.Default);
+                    var notificationResponse = new NotificationResponse(parameters, string.Empty, NotificationCategoryType.Default);
 
                     if (_onNotificationOpened == null && enableDelayedResponse)
                         delayedNotificationResponse = notificationResponse;
@@ -155,19 +155,19 @@ namespace Plugin.PushNotification
 
             if (autoRegistration)
             {
-               CrossPushNotification.Current.RegisterForPushNotifications();
+                CrossPushNotification.Current.RegisterForPushNotifications();
             }
         }
 
         public static void Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true, bool enableDelayedResponse = true)
         {
             CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
-            Initialize(options, autoRegistration,enableDelayedResponse);
+            Initialize(options, autoRegistration, enableDelayedResponse);
         }
 
         public static void Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true, bool enableDelayedResponse = true)
         {
-            Initialize(options, autoRegistration,enableDelayedResponse);
+            Initialize(options, autoRegistration, enableDelayedResponse);
             RegisterUserNotificationCategories(notificationUserCategories);
         }
 
@@ -244,7 +244,7 @@ namespace Plugin.PushNotification
                     }
                     else
                     {
-                        this.InvokeOnMainThread(()=> UIApplication.SharedApplication.RegisterForRemoteNotifications());
+                        this.InvokeOnMainThread(() => UIApplication.SharedApplication.RegisterForRemoteNotifications());
                     }
                 });
             }
@@ -387,14 +387,27 @@ namespace Plugin.PushNotification
                     {
                         foreach (var apsVal in aps)
                         {
-                            if (apsVal.Value is NSDictionary)
+                            if (apsVal.Value is NSDictionary apsValDict)
                             {
                                 if (apsVal.Key.Equals(keyAlert))
                                 {
-                                    foreach (var alertVal in apsVal.Value as NSDictionary)
+                                    foreach (var alertVal in apsValDict)
                                     {
-                                        parameters.Add($"aps.alert.{alertVal.Key}", $"{alertVal.Value}");
+                                        if (alertVal.Value is NSDictionary valDict)
+                                        {
+                                            var value = valDict.ToJson();
+                                            parameters.Add($"aps.alert.{alertVal.Key}", value);
+                                        }
+                                        else
+                                        {
+                                            parameters.Add($"aps.alert.{alertVal.Key}", $"{alertVal.Value}");
+                                        }
                                     }
+                                }
+                                else
+                                {
+                                    var value = apsValDict.ToJson();
+                                    parameters.Add($"aps.{apsVal.Key}", value);
                                 }
                             }
                             else
@@ -403,6 +416,11 @@ namespace Plugin.PushNotification
                             }
                         }
                     }
+                }
+                else if (val.Value is NSDictionary valDict)
+                {
+                    var value = valDict.ToJson();
+                    parameters.Add($"{val.Key}", value);
                 }
                 else
                 {
@@ -429,7 +447,7 @@ namespace Plugin.PushNotification
         {
             if (UIDevice.CurrentDevice.CheckSystemVersion(10, 0))
             {
-              
+
                 var deliveredNotifications = await UNUserNotificationCenter.Current.GetDeliveredNotificationsAsync();
                 var deliveredNotificationsMatches = deliveredNotifications.Where(u => (u.Request.Content.UserInfo.ContainsKey(NotificationIdKey) && $"{u.Request.Content.UserInfo[NotificationIdKey]}".Equals($"{id}")) || (u.Request.Content.UserInfo.ContainsKey(ApsNotificationIdKey) && u.Request.Content.UserInfo[ApsNotificationIdKey].Equals($"{id}"))).Select(s => s.Request.Identifier).ToArray();
                 if (deliveredNotificationsMatches.Length > 0)
@@ -478,8 +496,16 @@ namespace Plugin.PushNotification
 
                 }
             }
-                
-           
+        }
+    }
+
+    public static class HelperExtensions
+    {
+        public static string ToJson(this NSDictionary dictionary)
+        {
+            var json = NSJsonSerialization.Serialize(dictionary,
+            NSJsonWritingOptions.SortedKeys, out NSError error);
+            return json.ToString(NSStringEncoding.UTF8);
         }
     }
 }
