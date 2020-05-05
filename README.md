@@ -45,6 +45,7 @@ Here you will find detailed documentation on setting up and using the Push Notif
 * [Charlin Agramonte](https://github.com/char0394)
 * [Alberto Florenzan](https://github.com/aflorenzan)
 * [Angel Andres Mañon](https://github.com/AngelAndresM)
+* [Lorenzo Araujo](https://github.com/valentineg8)
 * [Tymen Steur](https://github.com/TymenSteur)
 * [Sameer Khandekar](https://github.com/sameerkapps)
 * [Px7-941](https://github.com/Px7-941)
