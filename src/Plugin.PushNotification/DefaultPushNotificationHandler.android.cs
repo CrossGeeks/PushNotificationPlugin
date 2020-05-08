@@ -393,6 +393,7 @@ namespace Plugin.PushNotification
             }
 
             var deleteIntent = new Intent(context, typeof(PushNotificationDeletedReceiver));
+            deleteIntent.PutExtras(extras);
             var pendingDeleteIntent = PendingIntent.GetBroadcast(context, requestCode, deleteIntent, PendingIntentFlags.UpdateCurrent);
             notificationBuilder.SetDeleteIntent(pendingDeleteIntent);
 
