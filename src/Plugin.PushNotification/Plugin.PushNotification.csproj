@@ -27,7 +27,7 @@
     <Title>Push Notification Plugin for Xamarin</Title>
     <Summary>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Summary>
     <Description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Description>
-    <PackageReleaseNotes>Fixed Android: No data in OnNotificationDeleted</PackageReleaseNotes>
+    <PackageReleaseNotes>Added OnNotificationAction event to be used when you use notification actions</PackageReleaseNotes>
     <Owners>crossgeeks,rdelrosario</Owners>
     <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
     <Copyright>Copyright 2017 CrossGeeks</Copyright>
