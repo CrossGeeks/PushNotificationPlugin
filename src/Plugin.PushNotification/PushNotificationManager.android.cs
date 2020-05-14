@@ -90,12 +90,34 @@ namespace Plugin.PushNotification
 
                 var response = new NotificationResponse(parameters, extras.GetString(DefaultPushNotificationHandler.ActionIdentifierKey, string.Empty));
 
-                if (_onNotificationOpened == null && enableDelayedResponse)
-                    delayedNotificationResponse = response;
-                else
-                    _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(response.Data, response.Identifier, response.Type));
 
-                CrossPushNotification.Current.NotificationHandler?.OnOpened(response);
+                if (string.IsNullOrEmpty(response.Identifier))
+                {
+                    if (_onNotificationOpened == null && enableDelayedResponse)
+                    {
+                        delayedNotificationResponse = response;
+                    }
+                    else
+                    {
+                        _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(response.Data, response.Identifier, response.Type,response.Result));
+                    }
+                    CrossPushNotification.Current.NotificationHandler?.OnOpened(response);
+                }
+                else
+                {
+                    if (_onNotificationAction == null && enableDelayedResponse)
+                    {
+                        delayedNotificationResponse = response;
+                    }
+                    else
+                    {
+                        _onNotificationAction?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(response.Data, response.Identifier, response.Type,response.Result));
+                    }
+
+                    CrossPushNotification.Current.NotificationHandler?.OnAction(response);
+                }
+
+               
             }
         }
 
@@ -325,6 +347,30 @@ namespace Plugin.PushNotification
             }
         }
 
+        private static PushNotificationResponseEventHandler _onNotificationAction;
+        public event PushNotificationResponseEventHandler OnNotificationAction
+        {
+            add
+            {
+                var previousVal = _onNotificationAction;
+                _onNotificationAction += value;
+                if (delayedNotificationResponse != null && previousVal == null)
+                {
+                    var tmpParams = delayedNotificationResponse;
+                    if (!string.IsNullOrEmpty(tmpParams.Identifier))
+                    {
+                        _onNotificationAction?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(tmpParams.Data, tmpParams.Identifier, tmpParams.Type));
+                        delayedNotificationResponse = null;
+                    }
+
+                }
+            }
+            remove
+            {
+                _onNotificationAction -= value;
+            }
+        }
+
         static PushNotificationTokenEventHandler _onTokenRefresh;
         public event PushNotificationTokenEventHandler OnTokenRefresh
         {
@@ -378,6 +424,12 @@ namespace Plugin.PushNotification
         internal static void RegisterToken(string token)
         {
             _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(token));
+        }
+        internal static void RegisterAction(IDictionary<string, object> data,string result = null)
+        {
+            var response = new NotificationResponse(data, data.ContainsKey(DefaultPushNotificationHandler.ActionIdentifierKey) ? $"{data[DefaultPushNotificationHandler.ActionIdentifierKey]}" : string.Empty, NotificationCategoryType.Default,result);
+
+            _onNotificationAction?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(response.Data, response.Identifier, response.Type));
         }
         internal static void RegisterData(IDictionary<string, object> data)
         {

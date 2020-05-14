@@ -108,7 +108,27 @@ Android Silent Payload Sample:
  };
 ```
 
-**Note: This is the event were you will navigate to an specific page/activity/viewcontroller, if needed**
+**Note: This is the event where you will navigate to an specific page/activity/viewcontroller, if needed**
+
+**OnNotificationAction**
+```csharp
+  
+  CrossPushNotification.Current.OnNotificationAction += (s,p) =>
+  {
+                System.Diagnostics.Debug.WriteLine("Action");
+           
+                if(!string.IsNullOrEmpty(p.Identifier))
+                {
+                    System.Diagnostics.Debug.WriteLine($"ActionId: {p.Identifier}");
+				    foreach(var data in p.Data)
+					{
+						System.Diagnostics.Debug.WriteLine($"{data.Key} : {data.Value}");
+					}
+
+                }
+             
+ };
+```
 
 **OnNotificationDeleted** (Android Only)
 ```csharp
@@ -135,6 +155,8 @@ public interface IPushNotificationHandler
         void OnError(string error);
         //Method triggered when a notification is opened
         void OnOpened(NotificationResponse response);
+        //Method triggered when a notification is opened by tapping an action
+        void OnAction(NotificationResponse response);
         //Method triggered when a notification is received
         void OnReceived(IDictionary<string, string> parameters);
 }

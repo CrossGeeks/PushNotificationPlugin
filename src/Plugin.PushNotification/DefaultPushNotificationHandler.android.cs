@@ -10,6 +10,7 @@ using Android.OS;
 using Android.Support.V4.App;
 using Java.Util;
 using static Android.App.ActivityManager;
+using RemoteInput = Android.Support.V4.App.RemoteInput;
 
 namespace Plugin.PushNotification
 {
@@ -131,6 +132,12 @@ namespace Plugin.PushNotification
         {
             System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnOpened");
         }
+
+        public void OnAction(NotificationResponse response)
+        {
+            System.Diagnostics.Debug.WriteLine($"{DomainTag} - OnAction");
+        }
+
 
         public virtual void OnReceived(IDictionary<string, object> parameters)
         {
@@ -485,7 +492,7 @@ namespace Plugin.PushNotification
                             {
                                 Intent actionIntent = null;
                                 PendingIntent pendingActionIntent = null;
-
+                                NotificationCompat.Action nAction = null;
                                 if (action.Type == NotificationActionType.Foreground)
                                 {
                                     actionIntent = typeof(Activity).IsAssignableFrom(PushNotificationManager.NotificationActivityType) ? new Intent(Application.Context, PushNotificationManager.NotificationActivityType) : (PushNotificationManager.DefaultNotificationActivityType == null ? context.PackageManager.GetLaunchIntentForPackage(context.PackageName) : new Intent(Application.Context, PushNotificationManager.DefaultNotificationActivityType));
@@ -498,6 +505,22 @@ namespace Plugin.PushNotification
                                     extras.PutString(ActionIdentifierKey, action.Id);
                                     actionIntent.PutExtras(extras);
                                     pendingActionIntent = PendingIntent.GetActivity(context, aRequestCode, actionIntent, PendingIntentFlags.UpdateCurrent);
+                                    nAction= new NotificationCompat.Action.Builder(context.Resources.GetIdentifier(action.Icon, "drawable", Application.Context.PackageName), action.Title, pendingActionIntent).Build();
+                                }
+                                else if(action.Type == NotificationActionType.Reply)
+                                {
+                                    var input = new RemoteInput.Builder("Result").SetLabel(action.Title).Build();
+
+                                    actionIntent = new Intent(context, typeof(PushNotificationReplyReceiver));
+                                    extras.PutString(ActionIdentifierKey, action.Id);
+                                    actionIntent.PutExtras(extras);
+
+                                    pendingActionIntent = PendingIntent.GetBroadcast(context, aRequestCode, actionIntent, PendingIntentFlags.UpdateCurrent);
+
+                                    nAction = new NotificationCompat.Action.Builder(context.Resources.GetIdentifier(action.Icon, "drawable", Application.Context.PackageName), action.Title, pendingActionIntent)
+                                        .SetAllowGeneratedReplies(true)
+                                        .AddRemoteInput(input)
+                                        .Build();
                                 }
                                 else
                                 {
@@ -505,9 +528,10 @@ namespace Plugin.PushNotification
                                     extras.PutString(ActionIdentifierKey, action.Id);
                                     actionIntent.PutExtras(extras);
                                     pendingActionIntent = PendingIntent.GetBroadcast(context, aRequestCode, actionIntent, PendingIntentFlags.UpdateCurrent);
+                                    nAction = new NotificationCompat.Action.Builder(context.Resources.GetIdentifier(action.Icon, "drawable", Application.Context.PackageName), action.Title, pendingActionIntent).Build();
                                 }
 
-                                notificationBuilder.AddAction(context.Resources.GetIdentifier(action.Icon, "drawable", Application.Context.PackageName), action.Title, pendingActionIntent);
+                                notificationBuilder.AddAction(nAction);
                             }
                         }
                     }

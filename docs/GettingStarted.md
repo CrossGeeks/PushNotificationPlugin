@@ -220,6 +220,13 @@ Once token is registered/refreshed you will get it on **OnTokenRefresh** event.
   event PushNotificationResponseEventHandler OnNotificationOpened;
 ```
 
+```csharp
+  /// <summary>
+  /// Event triggered when a notification is opened by tapping an action
+  /// </summary>
+  event PushNotificationResponseEventHandler OnNotificationAction;
+```
+
 ```csharp 
    /// <summary>
    /// Event triggered when a notification is deleted (Android Only)
@@ -274,6 +281,29 @@ Push message opened event usage sample:
              
  };
 ```
+```
+
+Push message action tapped event usage sample:
+**OnNotificationAction**
+```csharp
+  
+  CrossPushNotification.Current.OnNotificationAction += (s,p) =>
+  {
+                System.Diagnostics.Debug.WriteLine("Action");
+           
+                if(!string.IsNullOrEmpty(p.Identifier))
+                {
+                    System.Diagnostics.Debug.WriteLine($"ActionId: {p.Identifier}");
+				    foreach(var data in p.Data)
+					{
+						System.Diagnostics.Debug.WriteLine($"{data.Key} : {data.Value}");
+					}
+
+                }
+             
+ };
+```
+
 Push message deleted event usage sample: (Android Only)
 ```csharp
 

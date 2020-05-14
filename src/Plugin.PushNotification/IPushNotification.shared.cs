@@ -9,6 +9,7 @@ namespace Plugin.PushNotification
         Default,
         AuthenticationRequired, //Only applies for iOS
         Foreground,
+        Reply,
         Destructive  //Only applies for iOS
     }
 
@@ -46,6 +47,15 @@ namespace Plugin.PushNotification
             Title = title;
             Type = type;
             Icon = icon;
+        }
+    }
+
+    public class NotificationUserReplyAction : NotificationUserAction
+    {
+        public string Placeholder { get; }
+        public NotificationUserReplyAction(string id, string title, NotificationActionType type = NotificationActionType.Default, string icon = "",string placeholder = "") : base(id,title,type,icon)
+        {
+            Placeholder = placeholder;
         }
     }
 
@@ -106,12 +116,14 @@ namespace Plugin.PushNotification
         public IDictionary<string, object> Data { get; }
 
         public NotificationCategoryType Type { get; }
+        public string? Result { get; }
 
-        public PushNotificationResponseEventArgs(IDictionary<string, object> data, string identifier = "", NotificationCategoryType type = NotificationCategoryType.Default)
+        public PushNotificationResponseEventArgs(IDictionary<string, object> data, string identifier = "", NotificationCategoryType type = NotificationCategoryType.Default, string? result = null)
         {
             Identifier = identifier;
             Data = data;
             Type = type;
+            Result = result;
         }
     }
 
@@ -132,6 +144,10 @@ namespace Plugin.PushNotification
         /// Event triggered when a notification is opened
         /// </summary>
         event PushNotificationResponseEventHandler OnNotificationOpened;
+        /// <summary>
+        /// Event triggered when a notification is opened by tapping an action
+        /// </summary>
+        event PushNotificationResponseEventHandler OnNotificationAction;
         /// <summary>
         /// Event triggered when a notification is received
         /// </summary>

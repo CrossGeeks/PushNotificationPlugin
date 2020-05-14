@@ -133,12 +133,12 @@ iOS on **AppDelegate** FinishLaunching:
    
 ```
 
-You will get the identifier of the action that was tapped on **OnNotificationOpened** event:
+You will get the identifier of the action that was tapped on **OnNotificationAction** event:
 
 ```csharp
-CrossPushNotification.Current.OnNotificationOpened += (s,p) =>
+CrossPushNotification.Current.OnNotificationAction += (s,p) =>
 {
-                System.Diagnostics.Debug.WriteLine("Opened");
+                System.Diagnostics.Debug.WriteLine("Notification action tapped");
               
 
                 if(!string.IsNullOrEmpty(p.Identifier))

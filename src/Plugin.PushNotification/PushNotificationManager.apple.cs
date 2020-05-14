@@ -100,6 +100,19 @@ namespace Plugin.PushNotification
             }
         }
 
+        private static PushNotificationResponseEventHandler _onNotificationAction;
+        public event PushNotificationResponseEventHandler OnNotificationAction
+        {
+            add
+            {
+                _onNotificationAction += value;
+            }
+            remove
+            {
+                _onNotificationAction -= value;
+            }
+        }
+
         public NotificationUserCategory[] GetUserNotificationCategories()
         {
             return UsernNotificationCategories?.ToArray();
@@ -144,6 +157,7 @@ namespace Plugin.PushNotification
 
                     var notificationResponse = new NotificationResponse(parameters, string.Empty, NotificationCategoryType.Default);
 
+
                     if (_onNotificationOpened == null && enableDelayedResponse)
                         delayedNotificationResponse = notificationResponse;
                     else
@@ -184,24 +198,22 @@ namespace Plugin.PushNotification
                     foreach (var action in userCat.Actions)
                     {
                         // Create action
-                        var actionID = action.Id;
-                        var title = action.Title;
-                        var notificationActionType = UNNotificationActionOptions.None;
                         switch (action.Type)
                         {
                             case NotificationActionType.AuthenticationRequired:
-                                notificationActionType = UNNotificationActionOptions.AuthenticationRequired;
+                                actions.Add(UNNotificationAction.FromIdentifier(action.Id, action.Title, UNNotificationActionOptions.AuthenticationRequired));
                                 break;
                             case NotificationActionType.Destructive:
-                                notificationActionType = UNNotificationActionOptions.Destructive;
+                                actions.Add(UNNotificationAction.FromIdentifier(action.Id, action.Title, UNNotificationActionOptions.Destructive));
                                 break;
                             case NotificationActionType.Foreground:
-                                notificationActionType = UNNotificationActionOptions.Foreground;
+                                actions.Add(UNNotificationAction.FromIdentifier(action.Id, action.Title, UNNotificationActionOptions.Foreground));
+                                break;
+                            case NotificationActionType.Reply:
+                                actions.Add(UNTextInputNotificationAction.FromIdentifier(action.Id,action.Title,UNNotificationActionOptions.None,action.Title,string.Empty));
                                 break;
                         }
 
-                        var notificationAction = UNNotificationAction.FromIdentifier(actionID, title, notificationActionType);
-                        actions.Add(notificationAction);
                     }
 
                     // Create category
@@ -322,17 +334,24 @@ namespace Plugin.PushNotification
         public void DidReceiveNotificationResponse(UNUserNotificationCenter center, UNNotificationResponse response, Action completionHandler)
         {
             var parameters = GetParameters(response.Notification.Request.Content.UserInfo);
-
+            string? result = null; 
             NotificationCategoryType catType = NotificationCategoryType.Default;
             if (response.IsCustomAction)
                 catType = NotificationCategoryType.Custom;
             else if (response.IsDismissAction)
                 catType = NotificationCategoryType.Dismiss;
+            
+            
+            if (response is UNTextInputNotificationResponse textResponse)
+            {
+                result = textResponse.UserText;
+            }
 
-            var notificationResponse = new NotificationResponse(parameters, $"{response.ActionIdentifier}".Equals("com.apple.UNNotificationDefaultActionIdentifier", StringComparison.CurrentCultureIgnoreCase) ? string.Empty : $"{response.ActionIdentifier}", catType);
-            _onNotificationOpened?.Invoke(this, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type));
+            var notificationResponse = new NotificationResponse(parameters, $"{response.ActionIdentifier}".Equals("com.apple.UNNotificationDefaultActionIdentifier", StringComparison.CurrentCultureIgnoreCase) ? string.Empty : $"{response.ActionIdentifier}", catType,result);
 
-            CrossPushNotification.Current.NotificationHandler?.OnOpened(notificationResponse);
+            _onNotificationAction?.Invoke(this, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type,result));
+
+            CrossPushNotification.Current.NotificationHandler?.OnAction(notificationResponse);
 
             // Inform caller it has been handled
             completionHandler();

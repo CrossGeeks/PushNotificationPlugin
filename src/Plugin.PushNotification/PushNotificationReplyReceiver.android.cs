@@ -13,7 +13,7 @@ using Android.Widget;
 namespace Plugin.PushNotification
 {
     [BroadcastReceiver]
-    public class PushNotificationActionReceiver : BroadcastReceiver
+    public class PushNotificationReplyReceiver : BroadcastReceiver
     {
         public override void OnReceive(Context context, Intent intent)
         {
@@ -28,10 +28,9 @@ namespace Plugin.PushNotification
                     System.Diagnostics.Debug.WriteLine(key, $"{extras.Get(key)}");
                 }
             }
+            var reply = RemoteInput.GetResultsFromIntent(intent)?.GetString("Result");
+            PushNotificationManager.RegisterAction(parameters,reply);
 
-         
-            PushNotificationManager.RegisterAction(parameters);
-            
             NotificationManager manager = context.GetSystemService(Context.NotificationService) as NotificationManager;
             var notificationId = extras.GetInt(DefaultPushNotificationHandler.ActionNotificationIdKey, -1);
             if (notificationId != -1)
