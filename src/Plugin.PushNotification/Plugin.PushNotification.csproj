@@ -1,7 +1,8 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.41">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;MonoAndroid90;Xamarin.iOS10;MonoAndroid10.0;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;MonoAndroid90;Xamarin.iOS10;MonoAndroid10.0;Xamarin.Mac20;</TargetFrameworks>
+    <TargetFrameworks Condition=" $(OS) == 'WINDOWS_NT' ">uap10.0.16299;$(TargetFrameworks)</TargetFrameworks>
     <AssemblyName>Plugin.PushNotification</AssemblyName>
     <RootNamespace>Plugin.PushNotification</RootNamespace>
     <PackageId>Plugin.PushNotification</PackageId>
@@ -24,10 +25,10 @@
     <RepositoryUrl>https://github.com/CrossGeeks/PushNotificationPlugin</RepositoryUrl>
     <PackageTags>iOS,Android,push notifications,xamarin,plugins,fcm,apn</PackageTags>
 
-    <Title>Push Notification Plugin for Xamarin</Title>
-    <Summary>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Summary>
-    <Description>Receive and handle push notifications across Xamarin.iOS and Xamarin.Android</Description>
-    <PackageReleaseNotes>Fixed Android: No data in OnNotificationDeleted</PackageReleaseNotes>
+    <Title>Push Notification Plugin for Xamarin and UWP</Title>
+    <Summary>Receive and handle push notifications across Xamarin.iOS, Xamarin.Android, Xamarin.Mac, UWP</Summary>
+    <Description>Receive and handle push notifications across Xamarin.iOS, Xamarin.Android, Xamarin.Mac, UWP</Description>
+    <PackageReleaseNotes>Included Xamarin.Mac and UWP support</PackageReleaseNotes>
     <Owners>crossgeeks,rdelrosario</Owners>
     <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
     <Copyright>Copyright 2017 CrossGeeks</Copyright>
@@ -60,7 +61,11 @@
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
   </ItemGroup>
-
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <Compile Include="**\*.uwp.cs" />
+    <Compile Include="**\*.uwp.*.cs" />
+  </ItemGroup>
   <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
     <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.3" />
     <PackageReference Include="Xamarin.Firebase.Common" Version="71.1610.0" />
@@ -74,5 +79,21 @@
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
     <Compile Include="**\*.apple.cs" />
      <Compile Include="**\*.apple.*.cs" />
+    <Compile Include="**\*.ios.cs" />
+    <Compile Include="**\*.ios.*.cs" />
   </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
+    <Compile Include="**\*.apple.cs" />
+    <Compile Include="**\*.apple.*.cs" />
+    <Compile Include="**\*.macos.cs" />
+    <Compile Include="**\*.macos.*.cs" />
+  </ItemGroup>
+
+  <!--<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
+    <Compile Include="**\*.apple.cs" />
+    <Compile Include="**\*.apple.*.cs" />
+    <Compile Include="**\*.ios.cs" />
+    <Compile Include="**\*.ios.*.cs" />
+  </ItemGroup>-->
 </Project>
