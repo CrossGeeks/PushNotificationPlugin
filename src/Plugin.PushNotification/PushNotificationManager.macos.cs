@@ -143,27 +143,23 @@ namespace Plugin.PushNotification
             }
         }
 
-        public static void Initialize(NSDictionary options, bool autoRegistration = true, bool enableDelayedResponse = true)
+        public static void Initialize(NSNotification notification, bool autoRegistration = true, bool enableDelayedResponse = true)
         {
             CrossPushNotification.Current.NotificationHandler = CrossPushNotification.Current.NotificationHandler ?? new DefaultPushNotificationHandler();
-         
-            if (options?.ContainsKey(NSApplication.LaunchRemoteNotificationKey) ?? false)
+
+            if (notification != null && notification.UserInfo !=null)
             {
-                var pushPayload = options[NSApplication.LaunchRemoteNotificationKey] as NSDictionary;
-                if (pushPayload != null)
-                {
-                    var parameters = GetParameters(pushPayload);
+                var parameters = GetParameters(notification.UserInfo);
 
-                    var notificationResponse = new NotificationResponse(parameters, string.Empty, NotificationCategoryType.Default);
+                var notificationResponse = new NotificationResponse(parameters, string.Empty, NotificationCategoryType.Default);
 
 
-                    if (_onNotificationOpened == null && enableDelayedResponse)
-                        delayedNotificationResponse = notificationResponse;
-                    else
-                        _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type));
+                if (_onNotificationOpened == null && enableDelayedResponse)
+                    delayedNotificationResponse = notificationResponse;
+                else
+                    _onNotificationOpened?.Invoke(CrossPushNotification.Current, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type));
 
-                    CrossPushNotification.Current.NotificationHandler?.OnOpened(notificationResponse);
-                }
+                CrossPushNotification.Current.NotificationHandler?.OnOpened(notificationResponse);
             }
 
             if (autoRegistration)
@@ -172,15 +168,15 @@ namespace Plugin.PushNotification
             }
         }
 
-        public static void Initialize(NSDictionary options, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true, bool enableDelayedResponse = true)
+        public static void Initialize(NSNotification notification, IPushNotificationHandler pushNotificationHandler, bool autoRegistration = true, bool enableDelayedResponse = true)
         {
             CrossPushNotification.Current.NotificationHandler = pushNotificationHandler;
-            Initialize(options, autoRegistration, enableDelayedResponse);
+            Initialize(notification, autoRegistration, enableDelayedResponse);
         }
 
-        public static void Initialize(NSDictionary options, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true, bool enableDelayedResponse = true)
+        public static void Initialize(NSNotification notification, NotificationUserCategory[] notificationUserCategories, bool autoRegistration = true, bool enableDelayedResponse = true)
         {
-            Initialize(options, autoRegistration, enableDelayedResponse);
+            Initialize(notification, autoRegistration, enableDelayedResponse);
             RegisterUserNotificationCategories(notificationUserCategories);
         }
 
