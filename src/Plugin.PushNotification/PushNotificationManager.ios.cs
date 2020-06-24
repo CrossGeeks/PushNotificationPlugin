@@ -199,6 +199,9 @@ namespace Plugin.PushNotification
                         // Create action
                         switch (action.Type)
                         {
+                            case NotificationActionType.Default:
+                                actions.Add(UNNotificationAction.FromIdentifier(action.Id, action.Title, UNNotificationActionOptions.None));
+                                break;
                             case NotificationActionType.AuthenticationRequired:
                                 actions.Add(UNNotificationAction.FromIdentifier(action.Id, action.Title, UNNotificationActionOptions.AuthenticationRequired));
                                 break;
