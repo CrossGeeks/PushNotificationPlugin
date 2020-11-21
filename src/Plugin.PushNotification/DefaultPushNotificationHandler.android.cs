@@ -7,10 +7,10 @@ using Android.Content.Res;
 using Android.Graphics;
 using Android.Media;
 using Android.OS;
-using Android.Support.V4.App;
+using AndroidX.Core.App;
 using Java.Util;
 using static Android.App.ActivityManager;
-using RemoteInput = Android.Support.V4.App.RemoteInput;
+using RemoteInput = AndroidX.Core.App.RemoteInput;
 
 namespace Plugin.PushNotification
 {
