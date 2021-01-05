@@ -1,96 +1,87 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.41">
-
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;MonoAndroid90;Xamarin.iOS10;MonoAndroid10.0;Xamarin.Mac20;</TargetFrameworks>
-    <TargetFrameworks Condition=" $(OS) == 'WINDOWS_NT' ">uap10.0.16299;$(TargetFrameworks)</TargetFrameworks>
-    <AssemblyName>Plugin.PushNotification</AssemblyName>
-    <RootNamespace>Plugin.PushNotification</RootNamespace>
-    <PackageId>Plugin.PushNotification</PackageId>
-    <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <AssemblyVersion>1.4.0</AssemblyVersion>
-    <AssemblyFileVersion>1.4.0</AssemblyFileVersion>
-    <Version>1.4.0</Version>
-    <PackOnBuild>true</PackOnBuild>
-    <NeutralLanguage>en</NeutralLanguage>
-    <LangVersion>default</LangVersion>
-    <DefineConstants>$(DefineConstants);</DefineConstants>
-
-    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-
-    <LangVersion>latest</LangVersion>
-    <PackageLicenseUrl>https://github.com/CrossGeeks/PushNotificationPlugin/blob/master/LICENSE.md</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/CrossGeeks/PushNotificationPlugin</PackageProjectUrl>
-    <PackageIconUrl>https://github.com/CrossGeeks/PushNotificationPlugin/blob/master/assets/icon.png?raw=true</PackageIconUrl>
-    <RepositoryUrl>https://github.com/CrossGeeks/PushNotificationPlugin</RepositoryUrl>
-    <PackageTags>iOS,Android,push notifications,xamarin,plugins,fcm,apn</PackageTags>
-
-    <Title>Push Notification Plugin for Xamarin and UWP</Title>
-    <Summary>Receive and handle push notifications across Xamarin.iOS, Xamarin.Android, Xamarin.Mac, UWP</Summary>
-    <Description>Receive and handle push notifications across Xamarin.iOS, Xamarin.Android, Xamarin.Mac, UWP</Description>
-    <PackageReleaseNotes>Included Xamarin.Mac and UWP support</PackageReleaseNotes>
-    <Owners>crossgeeks,rdelrosario</Owners>
-    <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
-    <Copyright>Copyright 2017 CrossGeeks</Copyright>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;MonoAndroid90;Xamarin.iOS10;MonoAndroid10.0;Xamarin.Mac20;</TargetFrameworks>
+        <TargetFrameworks Condition=" $(OS) == 'WINDOWS_NT' ">uap10.0.16299;$(TargetFrameworks)</TargetFrameworks>
+        <AssemblyName>Plugin.PushNotification</AssemblyName>
+        <RootNamespace>Plugin.PushNotification</RootNamespace>
+        <PackageId>Plugin.PushNotification</PackageId>
+        <Product>$(AssemblyName) ($(TargetFramework))</Product>
+        <AssemblyVersion>3.4.3</AssemblyVersion>
+        <AssemblyFileVersion>3.4.3</AssemblyFileVersion>
+        <Version>3.4.3</Version>
+        <PackOnBuild>true</PackOnBuild>
+        <NeutralLanguage>en</NeutralLanguage>
+        <LangVersion>default</LangVersion>
+        <DefineConstants>$(DefineConstants);</DefineConstants>
+        <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+        <LangVersion>latest</LangVersion>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageIcon>Icon.png</PackageIcon>
+        <PackageProjectUrl>https://github.com/CrossGeeks/PushNotificationPlugin</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/CrossGeeks/PushNotificationPlugin</RepositoryUrl>
+        <PackageTags>iOS,Android,push notifications,xamarin,plugins,fcm,apn</PackageTags>
+        <Title>Push Notification Plugin for Xamarin and UWP</Title>
+        <Summary>Receive and handle push notifications across Xamarin.iOS, Xamarin.Android, Xamarin.Mac, UWP</Summary>
+        <Description>Receive and handle push notifications across Xamarin.iOS, Xamarin.Android, Xamarin.Mac, UWP</Description>
+        <PackageReleaseNotes>Included Xamarin.Mac and UWP support</PackageReleaseNotes>
+        <Owners>crossgeeks,rdelrosario</Owners>
+        <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
+        <Copyright>Copyright 2021 CrossGeeks</Copyright>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
     <!-- Define what happens on build and release -->
-   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
-    <DebugType>full</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <DebugType>pdbonly</DebugType>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <NoWarn>1701;1702;1591</NoWarn>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Plugin.PushNotification.xml</DocumentationFile>
-    <Company>Rendy Del Rosario, Sameer Khandekar, Px7-941</Company>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="**\*.shared.cs" />
-    <Compile Include="**\*.shared.*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <Compile Include="**\*.uwp.cs" />
-    <Compile Include="**\*.uwp.*.cs" />
-  </ItemGroup>
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <PackageReference Include="Xamarin.Android.Support.v4" Version="28.0.0.3" />
-    <PackageReference Include="Xamarin.Firebase.Common" Version="71.1610.0" />
-    <PackageReference Include="Xamarin.Firebase.Messaging" Version="71.1740.0" />
-    <PackageReference Include="Xamarin.GooglePlayServices.Basement" Version="71.1620.0" />
-    <PackageReference Include="Xamarin.GooglePlayServices.Tasks" Version="71.1601.0" />
-    <Compile Include="**\*.android.cs" />
-    <Compile Include="**\*.android.*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
-    <Compile Include="**\*.apple.cs" />
-     <Compile Include="**\*.apple.*.cs" />
-    <Compile Include="**\*.ios.cs" />
-    <Compile Include="**\*.ios.*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
-    <Compile Include="**\*.apple.cs" />
-    <Compile Include="**\*.apple.*.cs" />
-    <Compile Include="**\*.macos.cs" />
-    <Compile Include="**\*.macos.*.cs" />
-  </ItemGroup>
-
-  <!--<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
+    <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+        <DebugType>full</DebugType>
+        <DebugSymbols>true</DebugSymbols>
+        <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <DebugType>pdbonly</DebugType>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup>
+        <NoWarn>1701;1702;1591</NoWarn>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Plugin.PushNotification.xml</DocumentationFile>
+        <Company>Rendy Del Rosario, Sameer Khandekar, Px7-941</Company>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="..\..\assets\Icon.png" Pack="true" PackagePath="\" />
+        <Compile Include="**\*.shared.cs" />
+        <Compile Include="**\*.shared.*.cs" />
+    </ItemGroup>
+    <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
+    </ItemGroup>
+    <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <Compile Include="**\*.uwp.cs" />
+        <Compile Include="**\*.uwp.*.cs" />
+    </ItemGroup>
+    <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+        <PackageReference Include="Xamarin.Firebase.Messaging" Version="121.0.1" />
+        <PackageReference Include="Xamarin.GooglePlayServices.Basement" Version="117.5.0" />
+        <!-- fix nuget restore warnings and https://stackoverflow.com/questions/65381403/java-lang-noclassdeffounderror-when-implementing-firebase-cloud-messaging -->
+        <PackageReference Include="Xamarin.Google.Android.DataTransport.TransportRuntime" Version="2.2.5" />
+        <PackageReference Include="Xamarin.Google.Dagger" Version="2.27.0" />
+        <Compile Include="**\*.android.cs" />
+        <Compile Include="**\*.android.*.cs" />
+    </ItemGroup>
+    <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+        <Compile Include="**\*.apple.cs" />
+        <Compile Include="**\*.apple.*.cs" />
+        <Compile Include="**\*.ios.cs" />
+        <Compile Include="**\*.ios.*.cs" />
+    </ItemGroup>
+    <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.Mac')) ">
+        <Compile Include="**\*.apple.cs" />
+        <Compile Include="**\*.apple.*.cs" />
+        <Compile Include="**\*.macos.cs" />
+        <Compile Include="**\*.macos.*.cs" />
+    </ItemGroup>
+    <!--<ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.TVOS')) ">
     <Compile Include="**\*.apple.cs" />
     <Compile Include="**\*.apple.*.cs" />
     <Compile Include="**\*.ios.cs" />
