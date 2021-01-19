@@ -1,9 +1,9 @@
 variables:
-  MONO_VERSION: 6_5_0
+  MONO_VERSION: 6_4_0
   NETCORE_VERSION: '3.0.x'
 
 # set the version numbering, this results in 1.0.1 for the first build incrementing that way.
-name: 3.5$(rev:.r)
+name: 3.6$(rev:.r)
 
 # Defines that a commit to the master branch should trigger this build
 trigger:
