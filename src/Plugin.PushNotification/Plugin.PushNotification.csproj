@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
+<Project Sdk="MSBuild.Sdk.Extras/2.0.41">
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;MonoAndroid90;Xamarin.iOS10;MonoAndroid10.0;Xamarin.Mac20;</TargetFrameworks>
         <TargetFrameworks Condition=" $(OS) == 'WINDOWS_NT' ">uap10.0.16299;$(TargetFrameworks)</TargetFrameworks>
@@ -30,7 +30,6 @@
         <Authors>Rendy Del Rosario, Sameer Khandekar, Px7-941</Authors>
         <Copyright>Copyright 2021 CrossGeeks</Copyright>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Nullable>enable</Nullable>
     </PropertyGroup>
     <!-- Define what happens on build and release -->
     <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
