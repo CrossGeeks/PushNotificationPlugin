@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="MSBuild.Sdk.Extras/2.0.41">
+<Project Sdk="MSBuild.Sdk.Extras/3.0.23">
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;MonoAndroid90;Xamarin.iOS10;MonoAndroid10.0;Xamarin.Mac20;</TargetFrameworks>
         <TargetFrameworks Condition=" $(OS) == 'WINDOWS_NT' ">uap10.0.16299;$(TargetFrameworks)</TargetFrameworks>
@@ -60,6 +60,7 @@
         <Compile Include="**\*.uwp.*.cs" />
     </ItemGroup>
     <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
+        <PackageReference Include="Xamarin.Firebase.Common" Version="119.5.0" />
         <PackageReference Include="Xamarin.Firebase.Messaging" Version="121.0.1" />
         <PackageReference Include="Xamarin.GooglePlayServices.Basement" Version="117.5.0" />
         <!-- fix nuget restore warnings and https://stackoverflow.com/questions/65381403/java-lang-noclassdeffounderror-when-implementing-firebase-cloud-messaging -->
