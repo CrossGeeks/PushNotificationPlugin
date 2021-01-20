@@ -60,7 +60,9 @@
         <Compile Include="**\*.uwp.*.cs" />
     </ItemGroup>
     <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-        <PackageReference Include="Xamarin.Firebase.Common" Version="119.5.0" />
+        <PackageReference Include="Xamarin.Build.Download" Version="0.10.0">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
         <PackageReference Include="Xamarin.Firebase.Messaging" Version="121.0.1" />
         <PackageReference Include="Xamarin.GooglePlayServices.Basement" Version="117.5.0" />
         <!-- fix nuget restore warnings and https://stackoverflow.com/questions/65381403/java-lang-noclassdeffounderror-when-implementing-firebase-cloud-messaging -->
