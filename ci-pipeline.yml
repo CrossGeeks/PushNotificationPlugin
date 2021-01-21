@@ -1,7 +1,7 @@
 variables:
-  MONO_VERSION: 6_4_0
-  NETCORE_VERSION: '3.0.x'
-  XCODE_VERSION: 11.1
+  MONO_VERSION: 6_12_0
+  NETCORE_VERSION: '5.0.x'
+  XCODE_VERSION: 12.3
 
 # Starter pipeline
 # Start with a minimal pipeline that you can customize to build and deploy your code.
@@ -18,7 +18,7 @@ pr:
 
 # The type of machine this build should run on and what software should be on it
 pool:
-  vmImage: macos-10.14
+  vmImage: macOS-10.15
 
 # The different steps in our build
 steps:
