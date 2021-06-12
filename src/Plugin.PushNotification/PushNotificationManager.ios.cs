@@ -13,6 +13,9 @@ namespace Plugin.PushNotification
     /// </summary>
     public class PushNotificationManager : NSObject, IPushNotification, IUNUserNotificationCenterDelegate
     {
+        internal static PushNotificationManager Current
+            => (PushNotificationManager) CrossPushNotification.Current;
+
         static NotificationResponse delayedNotificationResponse = null;
         const string TokenKey = "Token";
 
@@ -359,7 +362,7 @@ namespace Plugin.PushNotification
             completionHandler();
         }
 
-        public static void DidRegisterRemoteNotifications(NSData deviceToken)
+        public void DidRegisterRemoteNotificationsInternal(NSData deviceToken)
         {
             var length = (int)deviceToken.Length;
             if (length == 0)
@@ -374,7 +377,7 @@ namespace Plugin.PushNotification
             }
 
             var cleanedDeviceToken = hex.ToString();
-            InternalSaveToken(cleanedDeviceToken);
+            Token = cleanedDeviceToken;
             _onTokenRefresh?.Invoke(CrossPushNotification.Current, new PushNotificationTokenEventArgs(cleanedDeviceToken));
         }
 
@@ -518,6 +521,9 @@ namespace Plugin.PushNotification
                 }
             }
         }
+
+        public static void DidRegisterRemoteNotifications(NSData deviceToken)
+            => Current.DidRegisterRemoteNotificationsInternal(deviceToken);
     }
 
     public static class HelperExtensions
