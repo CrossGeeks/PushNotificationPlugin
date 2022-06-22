@@ -55,7 +55,7 @@
     <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) ">
     </ItemGroup>
     <ItemGroup Condition=" $(TargetFramework.StartsWith('uap')) ">
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <Compile Include="**\*.uwp.cs" />
         <Compile Include="**\*.uwp.*.cs" />
     </ItemGroup>
