@@ -6,7 +6,7 @@ using Firebase.Messaging;
 
 namespace Plugin.PushNotification
 {
-    [Service]
+    [Service(Exported = false)]
     [IntentFilter(new[] { "com.google.firebase.MESSAGING_EVENT" })]
     public class PNMessagingService : FirebaseMessagingService
     {
