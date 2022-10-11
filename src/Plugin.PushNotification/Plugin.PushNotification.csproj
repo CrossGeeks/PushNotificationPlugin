@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="MSBuild.Sdk.Extras/2.0.41">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;MonoAndroid90;Xamarin.iOS10;MonoAndroid10.0;Xamarin.Mac20;</TargetFrameworks>
+        <TargetFrameworks>netstandard2.1;MonoAndroid90;Xamarin.iOS10;MonoAndroid10.0;Xamarin.Mac20;</TargetFrameworks>
         <TargetFrameworks Condition=" $(OS) == 'WINDOWS_NT' ">uap10.0.16299;$(TargetFrameworks)</TargetFrameworks>
         <AssemblyName>Plugin.PushNotification</AssemblyName>
         <RootNamespace>Plugin.PushNotification</RootNamespace>
@@ -60,11 +60,11 @@
         <Compile Include="**\*.uwp.*.cs" />
     </ItemGroup>
     <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-        <PackageReference Include="Xamarin.Firebase.Messaging" Version="121.0.1" />
-        <PackageReference Include="Xamarin.GooglePlayServices.Basement" Version="117.5.0" />
+        <PackageReference Include="Xamarin.Firebase.Messaging" Version="122.0.0.3" />
+        <PackageReference Include="Xamarin.GooglePlayServices.Basement" Version="117.6.0.4" />
         <!-- fix nuget restore warnings and https://stackoverflow.com/questions/65381403/java-lang-noclassdeffounderror-when-implementing-firebase-cloud-messaging -->
-        <PackageReference Include="Xamarin.Google.Android.DataTransport.TransportRuntime" Version="2.2.5" />
-        <PackageReference Include="Xamarin.Google.Dagger" Version="2.27.0" />
+        <PackageReference Include="Xamarin.Google.Android.DataTransport.TransportRuntime" Version="3.0.1.1" />
+        <PackageReference Include="Xamarin.Google.Dagger" Version="2.39.1" />
         <Compile Include="**\*.android.cs" />
         <Compile Include="**\*.android.*.cs" />
     </ItemGroup>

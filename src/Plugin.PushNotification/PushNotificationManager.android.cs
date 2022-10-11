@@ -230,7 +230,7 @@ namespace Plugin.PushNotification
         async Task<string> GetTokenAsync()
         {
             _tokenTcs = new TaskCompletionSource<string>();
-            FirebaseInstanceId.Instance.GetInstanceId().AddOnCompleteListener(this);
+            FirebaseMessaging.Instance.GetToken().AddOnCompleteListener(this);
             string retVal = null;
 
             try
@@ -268,7 +268,7 @@ namespace Plugin.PushNotification
 
         void CleanUp()
         {
-            FirebaseInstanceId.Instance.DeleteInstanceId();
+            FirebaseMessaging.Instance.DeleteToken();
             Token = string.Empty;
         }
 
@@ -458,7 +458,7 @@ namespace Plugin.PushNotification
             {
                 if (task.IsSuccessful)
                 {
-                    string token = task.Result.JavaCast<IInstanceIdResult>().Token;
+                    string token = (string)task.Result;
                     _tokenTcs?.TrySetResult(token);
                 }
                 else
