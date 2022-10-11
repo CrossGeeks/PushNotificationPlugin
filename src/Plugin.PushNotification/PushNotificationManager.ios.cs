@@ -352,11 +352,22 @@ namespace Plugin.PushNotification
                 result = textResponse.UserText;
             }
 
-            var notificationResponse = new NotificationResponse(parameters, $"{response.ActionIdentifier}".Equals("com.apple.UNNotificationDefaultActionIdentifier", StringComparison.CurrentCultureIgnoreCase) ? string.Empty : $"{response.ActionIdentifier}", catType,result);
+            var ident = $"{response.ActionIdentifier}".Equals("com.apple.UNNotificationDefaultActionIdentifier", StringComparison.CurrentCultureIgnoreCase) ? string.Empty : $"{response.ActionIdentifier}";
+            var notificationResponse = new NotificationResponse(parameters, ident, catType,result);
 
-            _onNotificationAction?.Invoke(this, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type,result));
 
-            CrossPushNotification.Current.NotificationHandler?.OnAction(notificationResponse);
+            if (string.IsNullOrEmpty(ident))
+            {
+                _onNotificationOpened?.Invoke(this, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type));
+
+                CrossPushNotification.Current.NotificationHandler?.OnOpened(notificationResponse);
+            }
+            else
+            {
+                _onNotificationAction?.Invoke(this, new PushNotificationResponseEventArgs(notificationResponse.Data, notificationResponse.Identifier, notificationResponse.Type, result));
+
+                CrossPushNotification.Current.NotificationHandler?.OnAction(notificationResponse);
+            }
 
             // Inform caller it has been handled
             completionHandler();
