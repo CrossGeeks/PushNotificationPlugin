@@ -365,7 +365,7 @@ namespace Plugin.PushNotification
                 resultIntent.SetFlags(PushNotificationManager.NotificationActivityFlags.Value);
             }
             var requestCode = new Java.Util.Random().NextInt();
-            var pendingIntent = PendingIntent.GetActivity(context, requestCode, resultIntent, PendingIntentFlags.UpdateCurrent);
+            var pendingIntent = PendingIntent.GetActivity(context, requestCode, resultIntent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
 
             if (parameters.TryGetValue(ChannelIdKey, out var channelId) && channelId != null)
             {
@@ -398,7 +398,7 @@ namespace Plugin.PushNotification
 
             if (parameters.TryGetValue(FullScreenIntentKey, out var fullScreenIntent) && ($"{fullScreenIntent}" == "true" || $"{fullScreenIntent}" == "1"))
             {
-                var fullScreenPendingIntent = PendingIntent.GetActivity(context, requestCode, resultIntent, PendingIntentFlags.UpdateCurrent);
+                var fullScreenPendingIntent = PendingIntent.GetActivity(context, requestCode, resultIntent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
                 notificationBuilder.SetFullScreenIntent(fullScreenPendingIntent, true);
                 notificationBuilder.SetCategory(NotificationCompat.CategoryCall);
                 parameters[PriorityKey] = "high";
@@ -406,7 +406,7 @@ namespace Plugin.PushNotification
 
             var deleteIntent = new Intent(context, typeof(PushNotificationDeletedReceiver));
             deleteIntent.PutExtras(extras);
-            var pendingDeleteIntent = PendingIntent.GetBroadcast(context, requestCode, deleteIntent, PendingIntentFlags.UpdateCurrent);
+            var pendingDeleteIntent = PendingIntent.GetBroadcast(context, requestCode, deleteIntent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
             notificationBuilder.SetDeleteIntent(pendingDeleteIntent);
 
             if (Build.VERSION.SdkInt < BuildVersionCodes.O)
@@ -509,7 +509,7 @@ namespace Plugin.PushNotification
 
                                     extras.PutString(ActionIdentifierKey, action.Id);
                                     actionIntent.PutExtras(extras);
-                                    pendingActionIntent = PendingIntent.GetActivity(context, aRequestCode, actionIntent, PendingIntentFlags.UpdateCurrent);
+                                    pendingActionIntent = PendingIntent.GetActivity(context, aRequestCode, actionIntent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
                                     nAction = new NotificationCompat.Action.Builder(context.Resources.GetIdentifier(action.Icon, "drawable", Application.Context.PackageName), action.Title, pendingActionIntent).Build();
                                 }
                                 else if (action.Type == NotificationActionType.Reply)
@@ -520,7 +520,7 @@ namespace Plugin.PushNotification
                                     extras.PutString(ActionIdentifierKey, action.Id);
                                     actionIntent.PutExtras(extras);
 
-                                    pendingActionIntent = PendingIntent.GetBroadcast(context, aRequestCode, actionIntent, PendingIntentFlags.UpdateCurrent);
+                                    pendingActionIntent = PendingIntent.GetBroadcast(context, aRequestCode, actionIntent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
 
                                     nAction = new NotificationCompat.Action.Builder(context.Resources.GetIdentifier(action.Icon, "drawable", Application.Context.PackageName), action.Title, pendingActionIntent)
                                         .SetAllowGeneratedReplies(true)
@@ -532,7 +532,7 @@ namespace Plugin.PushNotification
                                     actionIntent = new Intent(context, typeof(PushNotificationActionReceiver));
                                     extras.PutString(ActionIdentifierKey, action.Id);
                                     actionIntent.PutExtras(extras);
-                                    pendingActionIntent = PendingIntent.GetBroadcast(context, aRequestCode, actionIntent, PendingIntentFlags.UpdateCurrent);
+                                    pendingActionIntent = PendingIntent.GetBroadcast(context, aRequestCode, actionIntent, PendingIntentFlags.UpdateCurrent | PendingIntentFlags.Immutable);
                                     nAction = new NotificationCompat.Action.Builder(context.Resources.GetIdentifier(action.Icon, "drawable", Application.Context.PackageName), action.Title, pendingActionIntent).Build();
                                 }
 
