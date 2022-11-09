@@ -253,17 +253,17 @@ namespace Plugin.PushNotification
 
         public void Reset()
         {
-            try
+            ThreadPool.QueueUserWorkItem(state =>
             {
-                ThreadPool.QueueUserWorkItem(state =>
+                try
                 {
                     CleanUp();
-                });
-            }
-            catch (Exception ex)
-            {
-                _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.UnregistrationFailed, ex.ToString()));
-            }
+                }
+                catch (Exception ex)
+                {
+                    _onNotificationError?.Invoke(CrossPushNotification.Current, new PushNotificationErrorEventArgs(PushNotificationErrorType.UnregistrationFailed, ex.ToString()));
+                }
+            });
         }
 
         void CleanUp()
